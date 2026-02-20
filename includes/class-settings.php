@@ -38,6 +38,9 @@ class SLD_Settings {
         register_setting('sld_settings_group', 'sld_energy_per_panel', array(
             'sanitize_callback' => 'absint'
         ));
+        register_setting('sld_settings_group', 'sld_panel_wattage', array(
+            'sanitize_callback' => 'absint'
+        ));
 
         // API Settings Section
         add_settings_section(
@@ -110,6 +113,14 @@ class SLD_Settings {
             'solar-designer-settings',
             'sld_panel_settings'
         );
+
+        add_settings_field(
+            'sld_panel_wattage',
+            'Panel Peak Power (Wp)',
+            array($this, 'panel_wattage_field_callback'),
+            'solar-designer-settings',
+            'sld_panel_settings'
+        );
     }
 
     public function api_key_notice() {
@@ -146,7 +157,7 @@ class SLD_Settings {
     }
 
     public function panel_settings_section_callback() {
-        echo '<p>Real-world dimensions of a solar panel in centimetres. Used to calculate the correct pixel size on the map at any zoom level.</p>';
+        echo '<p>Real-world dimensions and electrical spec of a solar panel. Dimensions are used to calculate the correct pixel size on the map at any zoom level. Peak power is used with live PVGIS irradiance data to compute location-aware energy production.</p>';
     }
 
     public function api_key_field_callback() {
@@ -228,6 +239,20 @@ class SLD_Settings {
                max="300"
                class="small-text">
         <p class="description">Panel height in centimetres (standard panel: 160 cm)</p>
+        <?php
+    }
+
+    public function panel_wattage_field_callback() {
+        $wattage = get_option('sld_panel_wattage', 400);
+        ?>
+        <input type="number"
+               name="sld_panel_wattage"
+               value="<?php echo esc_attr($wattage); ?>"
+               min="50"
+               max="1000"
+               step="5"
+               class="small-text">
+        <p class="description">Electrical peak power of one panel in Watts-peak (Wp). Used with PVGIS irradiance data for location-aware energy calculations (e.g. 400 Wp).</p>
         <?php
     }
 

@@ -3,7 +3,7 @@ Contributors: yourusername
 Tags: solar, energy, calculator, interactive, layout, google maps
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,12 @@ The plugin uses EUR (€) by default. The electricity rate field accepts any dec
 4. Mobile view with responsive controls
 
 == Changelog ==
+
+= 1.2.0 =
+* Location-aware energy calculations via PVGIS API (EU JRC) — no API key required
+* New admin setting: Panel Peak Power (Wp) for accurate irradiance-based calculations
+* Solar data source line displayed below stats showing kWh/kWp/yr and kWh/panel/yr
+* Graceful fallback to admin-configured value when PVGIS is unreachable
 
 = 1.1.5 =
 * Added solar cell grid visual (CSS repeating-gradient, 3 cols × 5 rows)

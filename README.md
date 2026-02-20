@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.1.5 | **Phase:** 1 of 3 | **License:** GPL2
+**Version:** 1.2.0 | **Phase:** 1 of 3 | **License:** GPL2
 
 ---
 
@@ -35,6 +35,7 @@ Everything below is complete and working in this version.
 - Monthly average (kWh/month)
 - Annual savings in EUR — updates live as panels are added or rate is changed
 - Electricity rate editable directly by the user
+- **Location-aware via PVGIS** — queries the EU JRC PVGIS API on every map location change for real solar irradiance at that coordinate; falls back to admin-configured value if unavailable
 
 ### Google Maps Integration
 - Satellite view as the design background
@@ -81,9 +82,10 @@ Go to **Settings → Solar Designer** to configure:
 | Google Maps API Key | *(empty)* | Required for satellite view |
 | Enable Map Background | Yes | Toggle map globally |
 | Default Electricity Rate | 0.25 EUR/kWh | Used when `rate` attribute is not set |
-| Energy Per Panel | 400 kWh/year | Adjust for your region and panel spec |
+| Energy Per Panel | 400 kWh/year | Fallback when PVGIS is unavailable |
 | Panel Width | 100 cm | Real-world panel width |
 | Panel Height | 160 cm | Real-world panel height |
+| Panel Peak Power | 400 Wp | Used with PVGIS irradiance for location-aware energy calculation |
 
 ## User Guide
 

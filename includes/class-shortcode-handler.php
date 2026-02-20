@@ -129,6 +129,10 @@ class SLD_Shortcode_Handler {
             <div class="sld-location-info">
                 <small id="sld-current-location">Loading location...</small>
             </div>
+            <!-- PVGIS Solar Irradiance Data -->
+            <div class="sld-solar-data" id="sld-solar-data" style="display:none;">
+                <small id="sld-solar-data-text"></small>
+            </div>
             <?php endif; ?>
 
         </div>

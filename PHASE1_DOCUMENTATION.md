@@ -1,6 +1,6 @@
 # Solar Layout Designer — Phase 1 Documentation
 
-**Version:** 1.1.5
+**Version:** 1.2.0
 **Delivered:** February 2026
 **Plugin Slug:** `solar-layout-designer`
 
@@ -58,6 +58,7 @@ Panels render as realistic dark-navy photovoltaic cells — a 3-column × 5-row 
 - **Monthly average** (kWh/month)
 - **Annual savings** (€/year) = annual energy × electricity rate
 - Electricity rate editable live by the end user
+- **Location-aware irradiance via PVGIS** — on map load and every address search, the plugin queries the EU JRC PVGIS API (free, no key) for the actual annual solar yield at that location. Energy per panel is computed as `round((peakPower Wp / 1000) × E_y kWh/kWp/yr)`, replacing the static admin fallback. A source line is shown below the stats: `☀ {E_y} kWh/kWp/yr · {energyPerPanel} kWh/panel/yr — source: PVGIS`. Falls back silently to the admin-configured value if the API is unavailable.
 
 ### Admin Settings Page
 Settings → Solar Designer:
@@ -127,6 +128,7 @@ Create or edit any page/post and insert the shortcode:
 | Energy Per Panel | 400 | Estimated kWh/year per panel. Adjust based on your region and panel spec. |
 | Panel Width | 100 | Real-world width in centimetres (standard panel ≈ 100 cm). |
 | Panel Height | 160 | Real-world height in centimetres (standard panel ≈ 160 cm). |
+| Panel Peak Power | 400 | Electrical peak power in Watts-peak (Wp). Used with PVGIS irradiance to compute location-aware energy per panel. |
 
 ---
 
@@ -201,6 +203,20 @@ Scripts are enqueued in strict dependency order:
 5. solar-designer.js     SolarDesigner               — main app, event delegation, drag, sizing
 ```
 
+### PVGIS Irradiance Data Flow
+
+```
+[Map location set or changed]
+  → MapManager.moveToLocation(lat, lng)
+  → this.onLocationChange(lat, lng)          callback assigned by SolarDesigner
+  → SolarDesigner._onLocationReady(lat, lng) async
+  → MapManager.fetchSolarIrradiance(lat, lng)
+      URL: re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=…&lon=…&peakpower=1&loss=14&outputformat=json
+  → on success: energyPerPanel = round((peakPower / 1000) × E_y)
+                setEnergyPerPanel() → updateCalculations() → show PVGIS source line
+  → on failure: setEnergyPerPanel(admin fallback) → updateCalculations() → hide source line
+```
+
 ### HTML Structure (rendered by shortcode)
 
 ```html
@@ -251,6 +267,7 @@ Scripts are enqueued in strict dependency order:
 |--------|-------------|
 | `calculate(panelCount)` | Returns `{ panelCount, annualEnergy, monthlyAverage, annualSavings, electricityRate }` |
 | `setElectricityRate(rate)` | Updates rate; returns `false` if rate ≤ 0 |
+| `setEnergyPerPanel(value)` | Overrides energy per panel (e.g. from PVGIS); returns `false` if value ≤ 0 |
 | `EnergyCalculator.formatNumber(n)` | Static — adds thousands-separator commas |
 
 ### `MapManager` (`map-manager.js`)
@@ -260,9 +277,11 @@ Scripts are enqueued in strict dependency order:
 | `initMap(lat, lng, zoom)` | Initialises Google Maps in satellite mode |
 | `setupAddressSearch(input, btn)` | Attaches Places Autocomplete + geocoder fallback |
 | `getMetersPerPixel()` | Returns metres-per-pixel at current zoom and latitude |
-| `moveToLocation(lat, lng, zoom)` | Pans and zooms map |
+| `moveToLocation(lat, lng, zoom)` | Pans and zooms map; fires `onLocationChange` callback |
 | `toggleMap(show)` | Shows/hides the map div |
 | `resize()` | Triggers Google Maps resize event |
+| `fetchSolarIrradiance(lat, lng)` | Async — queries PVGIS API; returns `{ annualKwhPerKwp, monthlyKwhPerKwp[] }` or `null` |
+| `onLocationChange` | Callback property `(lat, lng) => void` — called by `moveToLocation`; assigned by `SolarDesigner` |
 
 ### `UIManager` (`ui-manager.js`)
 

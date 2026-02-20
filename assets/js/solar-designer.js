@@ -28,12 +28,16 @@ class SolarDesigner {
                 const zoom = parseInt(containerData.zoom)   || 20;
 
                 this.mapManager.initMap(lat, lng, zoom);
+                this.mapManager.onLocationChange = (newLat, newLng) => this._onLocationReady(newLat, newLng);
 
                 const searchInput = document.getElementById('sld-address-search');
                 const searchBtn   = document.getElementById('sld-search-btn');
                 if (searchInput && searchBtn) {
                     this.mapManager.setupAddressSearch(searchInput, searchBtn);
                 }
+
+                // Fetch irradiance for the initial map location
+                this._onLocationReady(lat, lng);
             } catch (e) {
                 console.error('Solar Designer: Map initialization failed, falling back to no-map mode.', e);
                 this.mapManager = null;
@@ -106,6 +110,38 @@ class SolarDesigner {
         }
 
         this.panelManager.resizePanels(widthPx, heightPx);
+    }
+
+    // ─── PVGIS Location-aware irradiance ────────────────────────────────────
+
+    /**
+     * Fetch live solar irradiance from PVGIS for the given coordinates.
+     * Updates the energy calculator and shows/hides the source line.
+     */
+    async _onLocationReady(lat, lng) {
+        const dataEl = document.getElementById('sld-solar-data');
+        const textEl = document.getElementById('sld-solar-data-text');
+        if (!dataEl || !textEl) return;
+
+        textEl.textContent = '⏳ Fetching solar irradiance data…';
+        dataEl.style.display = 'block';
+
+        const proxyUrl = this.config.ajaxUrl ? this.config.ajaxUrl + '?action=sld_pvgis' : null;
+        const result = await this.mapManager.fetchSolarIrradiance(lat, lng, proxyUrl);
+
+        if (result) {
+            const E_y = result.annualKwhPerKwp;
+            const peakPower = this.config.panelSpecs.peakPower;
+            const energyPerPanel = Math.round((peakPower / 1000) * E_y);
+            this.energyCalculator.setEnergyPerPanel(energyPerPanel);
+            this.updateCalculations();
+            textEl.textContent = `☀ ${Math.round(E_y).toLocaleString()} kWh/kWp/yr · ${energyPerPanel.toLocaleString()} kWh/panel/yr — source: PVGIS`;
+            dataEl.style.display = 'block';
+        } else {
+            this.energyCalculator.setEnergyPerPanel(this.config.panelSpecs.wattage);
+            this.updateCalculations();
+            dataEl.style.display = 'none';
+        }
     }
 
     // ─── Event Listeners ────────────────────────────────────────────────────

@@ -3,7 +3,7 @@
  * Plugin Name: Solar Layout Designer
  * Plugin URI: https://example.com
  * Description: Interactive solar panel layout designer with energy calculations and Google Maps integration
- * Version: 1.1.5
+ * Version: 1.2.1
  * Author: Your Name
  * Author URI: https://example.com
  * License: GPL2
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('SLD_VERSION', '1.1.5');
+define('SLD_VERSION', '1.2.1');
 define('SLD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLD_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -43,6 +43,7 @@ function solar_layout_designer_activate() {
     add_option('sld_energy_per_panel', 400);
     add_option('sld_google_maps_api_key', ''); // Google Maps API Key
     add_option('sld_enable_map_background', 'yes'); // Enable map by default
+    add_option('sld_panel_wattage', 400); // Panel peak power in Wp
 }
 
 // Deactivation hook

@@ -40,6 +40,14 @@ class EnergyCalculator {
     }
     
     /**
+     * Override energy per panel (e.g. from PVGIS live data)
+     */
+    setEnergyPerPanel(value) {
+        if (value > 0) { this.energyPerPanel = value; return true; }
+        return false;
+    }
+
+    /**
      * Get all calculations
      */
     calculate(panelCount) {

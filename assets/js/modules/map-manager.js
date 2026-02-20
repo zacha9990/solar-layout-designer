@@ -10,6 +10,7 @@ class MapManager {
         this.canvasHeight = canvasHeight;
         this.isMapEnabled = false;
         this.currentLocation = null;
+        this.onLocationChange = null;
     }
     
     /**
@@ -139,11 +140,46 @@ class MapManager {
      */
     moveToLocation(lat, lng, zoom) {
         if (!this.map) return;
-        
+
         const location = new google.maps.LatLng(lat, lng);
         this.map.setCenter(location);
         this.map.setZoom(zoom);
         this.currentLocation = { lat, lng };
+
+        if (typeof this.onLocationChange === 'function') {
+            this.onLocationChange(lat, lng);
+        }
+    }
+
+    /**
+     * Fetch solar irradiance data for the given coordinates.
+     * Routes through a server-side WordPress proxy (proxyUrl) to avoid CORS.
+     * Falls back to a direct PVGIS request if no proxyUrl is provided.
+     * Returns { annualKwhPerKwp, monthlyKwhPerKwp[] } or null on any error.
+     */
+    async fetchSolarIrradiance(lat, lng, proxyUrl = null) {
+        let url;
+        if (proxyUrl) {
+            url = `${proxyUrl}&lat=${lat}&lng=${lng}`;
+        } else {
+            url = `https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=${lat}&lon=${lng}&peakpower=1&loss=14&outputformat=json`;
+        }
+        try {
+            const response = await fetch(url);
+            if (!response.ok) return null;
+            const json = await response.json();
+            // Unwrap WordPress wp_send_json_success envelope when using proxy
+            const data = (json.success && json.data) ? json.data : json;
+            const fixed = data?.outputs?.totals?.fixed;
+            if (!fixed || !fixed.E_y) return null;
+            const monthly = (data?.outputs?.monthly?.fixed || []).map(m => m.E_m);
+            return {
+                annualKwhPerKwp: fixed.E_y,
+                monthlyKwhPerKwp: monthly
+            };
+        } catch (e) {
+            return null;
+        }
     }
     
     /**

@@ -6,6 +6,43 @@ class SLD_Plugin_Core {
     
     public function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
+        add_action('wp_ajax_sld_pvgis',        array($this, 'pvgis_proxy'));
+        add_action('wp_ajax_nopriv_sld_pvgis', array($this, 'pvgis_proxy'));
+    }
+
+    /**
+     * Server-side proxy for the PVGIS API.
+     * Avoids browser CORS restrictions on local/dev origins.
+     * Called via: admin-ajax.php?action=sld_pvgis&lat=…&lng=…
+     */
+    public function pvgis_proxy() {
+        $lat = isset($_GET['lat']) ? (float) $_GET['lat'] : null;
+        $lng = isset($_GET['lng']) ? (float) $_GET['lng'] : null;
+
+        if ($lat === null || $lng === null || $lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            wp_send_json_error('Invalid coordinates', 400);
+        }
+
+        $pvgis_url = add_query_arg(array(
+            'lat'          => $lat,
+            'lon'          => $lng,
+            'peakpower'    => 1,
+            'loss'         => 14,
+            'outputformat' => 'json',
+        ), 'https://re.jrc.ec.europa.eu/api/v5_2/PVcalc');
+
+        $response = wp_remote_get($pvgis_url, array('timeout' => 10));
+
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+            wp_send_json_error('PVGIS unavailable', 502);
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if (!$data) {
+            wp_send_json_error('Invalid PVGIS response', 502);
+        }
+
+        wp_send_json_success($data);
     }
     
     /**
@@ -102,7 +139,8 @@ class SLD_Plugin_Core {
             'panelSpecs' => array(
                 'width' => get_option('sld_panel_width', 100),
                 'height' => get_option('sld_panel_height', 160),
-                'wattage' => get_option('sld_energy_per_panel', 400)
+                'wattage' => get_option('sld_energy_per_panel', 400),
+                'peakPower' => get_option('sld_panel_wattage', 400)
             )
         ));
     }
