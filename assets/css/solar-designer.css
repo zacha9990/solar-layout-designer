@@ -265,6 +265,33 @@
     box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.6), 3px 3px 8px rgba(0, 0, 0, 0.35);
 }
 
+/* Rotation handle — tiny circle at top-center, only visible when panel is selected */
+.sld-rotate-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(74, 144, 217, 0.9);
+    border-radius: 50%;
+    top: 2px;
+    left: calc(50% - 4px);
+    cursor: crosshair;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    box-sizing: border-box;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.sld-panel-item.sld-panel-selected .sld-rotate-handle {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sld-rotate-handle:hover {
+    background: rgba(74, 144, 217, 0.9);
+}
+
 /* Location Info */
 .sld-location-info {
     margin-top: 10px;

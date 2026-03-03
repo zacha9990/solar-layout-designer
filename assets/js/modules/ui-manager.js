@@ -42,14 +42,21 @@ class UIManager {
     _createPanelDiv(panel) {
         const div = document.createElement('div');
         div.className = 'sld-panel-item';
+        if (panel.selected) div.classList.add('sld-panel-selected');
         div.dataset.panelId = panel.id;
-        div.style.left   = panel.x + 'px';
-        div.style.top    = panel.y + 'px';
-        div.style.width  = panel.width + 'px';
-        div.style.height = panel.height + 'px';
+        div.style.left      = panel.x + 'px';
+        div.style.top       = panel.y + 'px';
+        div.style.width     = panel.width + 'px';
+        div.style.height    = panel.height + 'px';
+        div.style.transform = `rotate(${panel.rotation}deg)`;
         div.title = 'Drag: pindah panel | Double-click: hapus panel';
 
-        // Panel number label — always present, shown on hover via CSS
+        // Rotation handle — tiny circle at top-center, only visible when selected
+        const handle = document.createElement('div');
+        handle.className = 'sld-rotate-handle';
+        div.appendChild(handle);
+
+        // Panel number label — shown on hover via CSS
         const label = document.createElement('span');
         label.className = 'sld-panel-label';
         label.textContent = '#' + (panel.id + 1);

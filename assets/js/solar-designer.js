@@ -60,7 +60,12 @@ class SolarDesigner {
         this.draggedPanelId  = null;
         this.dragOffset      = { x: 0, y: 0 };
 
-        // Selection state (for keyboard delete)
+        // Rotation state
+        this.isRotating      = false;
+        this.rotatingDiv     = null;
+        this.rotatingPanelId = null;
+
+        // Selection state (for keyboard delete / rotate / duplicate)
         this.selectedPanelId = null;
 
         // Calculate correct panel pixel size based on map zoom + latitude
@@ -151,6 +156,9 @@ class SolarDesigner {
         document.getElementById('sld-reset').addEventListener('click', () => this.reset());
         document.getElementById('sld-rate-input').addEventListener('change', e => this.updateRate(e.target.value));
 
+        const dupBtn = document.getElementById('sld-duplicate');
+        if (dupBtn) dupBtn.addEventListener('click', () => this.duplicatePanel());
+
         const mapToggle = document.getElementById('sld-toggle-map');
         if (mapToggle && this.mapManager) {
             mapToggle.addEventListener('change', e => this.toggleMap(e.target.checked));
@@ -159,17 +167,22 @@ class SolarDesigner {
         // Event delegation on panel area for drag + delete
         const panelArea = document.getElementById('sld-panel-area');
 
-        // Single click/mousedown → start drag
+        // mousedown → rotation handle takes priority, then drag
         panelArea.addEventListener('mousedown', e => {
+            if (e.target.classList.contains('sld-rotate-handle')) {
+                const div = e.target.closest('.sld-panel-item');
+                if (div) { this._startRotate(div, e.clientX, e.clientY); return; }
+            }
             const div = e.target.closest('.sld-panel-item');
             if (div) this._startDrag(div, e.clientX, e.clientY);
         });
 
         document.addEventListener('mousemove', e => {
-            if (this.isDragging) this._moveDrag(e.clientX, e.clientY);
+            if (this.isRotating) { this._moveRotate(e.clientX, e.clientY); return; }
+            if (this.isDragging)   this._moveDrag(e.clientX, e.clientY);
         });
 
-        document.addEventListener('mouseup', () => this._endDrag());
+        document.addEventListener('mouseup', () => { this._endDrag(); this._endRotate(); });
 
         // Double-click → delete panel
         panelArea.addEventListener('dblclick', e => {
@@ -211,13 +224,18 @@ class SolarDesigner {
     // ─── Drag helpers ────────────────────────────────────────────────────────
 
     _startDrag(div, clientX, clientY) {
-        const rect = div.getBoundingClientRect();
+        const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
+        const panel    = this.panelManager.panels.find(p => p.id === parseInt(div.dataset.panelId));
         this.isDragging     = true;
         this.draggedDiv     = div;
         this.draggedPanelId = parseInt(div.dataset.panelId);
-        this.dragOffset     = { x: clientX - rect.left, y: clientY - rect.top };
-        div.style.cursor    = 'grabbing';
-        div.style.zIndex    = '200';
+        // Use stored panel.x/y so offset is correct even when the panel is rotated
+        this.dragOffset     = {
+            x: clientX - areaRect.left - panel.x,
+            y: clientY - areaRect.top  - panel.y
+        };
+        div.style.cursor = 'grabbing';
+        div.style.zIndex = '200';
     }
 
     _moveDrag(clientX, clientY) {
@@ -241,10 +259,13 @@ class SolarDesigner {
 
     _setSelected(panelId) {
         this.selectedPanelId = panelId;
-        // Visual feedback: highlight selected panel
+        this.panelManager.panels.forEach(p => { p.selected = (p.id === panelId); });
         document.querySelectorAll('.sld-panel-item').forEach(el => {
             el.classList.toggle('sld-panel-selected', parseInt(el.dataset.panelId) === panelId);
         });
+        // Enable/disable duplicate button
+        const dupBtn = document.getElementById('sld-duplicate');
+        if (dupBtn) dupBtn.disabled = (panelId === null);
     }
 
     _endDrag() {
@@ -258,6 +279,33 @@ class SolarDesigner {
         this.draggedPanelId = null;
     }
 
+    // ─── Rotation helpers ─────────────────────────────────────────────────────
+
+    _startRotate(panelDiv, clientX, clientY) {
+        this.isRotating      = true;
+        this.rotatingDiv     = panelDiv;
+        this.rotatingPanelId = parseInt(panelDiv.dataset.panelId);
+    }
+
+    _moveRotate(clientX, clientY) {
+        const panel = this.panelManager.panels.find(p => p.id === this.rotatingPanelId);
+        if (!panel) return;
+        const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
+        const centerX  = areaRect.left + panel.x + panel.width  / 2;
+        const centerY  = areaRect.top  + panel.y + panel.height / 2;
+        // +90 so that 0° = handle pointing up (north)
+        const angle = Math.atan2(clientY - centerY, clientX - centerX) * 180 / Math.PI + 90;
+        panel.rotation = angle;
+        this.rotatingDiv.style.transform = `rotate(${angle}deg)`;
+    }
+
+    _endRotate() {
+        if (!this.isRotating) return;
+        this.isRotating      = false;
+        this.rotatingDiv     = null;
+        this.rotatingPanelId = null;
+    }
+
     // ─── Actions ─────────────────────────────────────────────────────────────
 
     addPanel() {
@@ -267,13 +315,25 @@ class SolarDesigner {
     }
 
     deletePanel(id) {
+        if (this.selectedPanelId === id) this._setSelected(null);
         this.panelManager.deletePanel(id);
         this.uiManager.render();
         this.updateCalculations();
     }
 
+    duplicatePanel() {
+        if (this.selectedPanelId === null) return;
+        const newPanel = this.panelManager.duplicatePanel(this.selectedPanelId);
+        if (newPanel) {
+            this.uiManager.render();
+            this._setSelected(newPanel.id);
+            this.updateCalculations();
+        }
+    }
+
     reset() {
         if (confirm('Reset all panels?')) {
+            this._setSelected(null);
             this.panelManager.reset();
             this.uiManager.render();
             this.updateCalculations();

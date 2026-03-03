@@ -47,6 +47,9 @@ class SLD_Shortcode_Handler {
                     <button id="sld-reset" class="sld-btn sld-btn-secondary">
                         &#8635; Reset All
                     </button>
+                    <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first">
+                        &#10064; Duplicate
+                    </button>
                 </div>
 
                 <?php if ($has_maps): ?>
@@ -91,7 +94,7 @@ class SLD_Shortcode_Handler {
                     <p class="sld-helper-text">Click &ldquo;Add Panel&rdquo; to start designing</p>
                 </div>
                 <div class="sld-panel-hint">
-                    Drag: move &nbsp;|&nbsp; Double-click: delete &nbsp;|&nbsp; Click + Delete key: delete
+                    Drag: move &nbsp;|&nbsp; Double-click: delete &nbsp;|&nbsp; Select &#9679; rotate (top handle) or duplicate
                 </div>
             </div>
 

@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('SLD_VERSION', '1.2.1');
+define('SLD_VERSION', '1.3.0');
 define('SLD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLD_PLUGIN_URL', plugin_dir_url(__FILE__));
 

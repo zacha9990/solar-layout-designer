@@ -108,6 +108,25 @@ class PanelManager {
     }
     
     /**
+     * Duplicate a panel by ID, offset by 20px
+     */
+    duplicatePanel(id) {
+        const original = this.panels.find(p => p.id === id);
+        if (!original) return null;
+        const newId = this.panelIdCounter++;
+        const panel = new SolarPanel(
+            newId,
+            Math.min(original.x + 20, Math.max(0, this.canvasWidth  - original.width)),
+            Math.min(original.y + 20, Math.max(0, this.canvasHeight - original.height)),
+            original.width,
+            original.height
+        );
+        panel.rotation = original.rotation;
+        this.panels.push(panel);
+        return panel;
+    }
+
+    /**
      * Reset all panels
      */
     reset() {
