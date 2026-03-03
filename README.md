@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.2.0 | **Phase:** 1 of 3 | **License:** GPL2
+**Version:** 1.3.0 | **Phase:** 2 of 3 (in progress) | **License:** GPL2
 
 ---
 
@@ -12,23 +12,28 @@ This plugin is developed in three phases. Each phase is reviewed and approved by
 
 | Phase | Scope | Value |
 |-------|-------|-------|
-| **Phase 1** *(current)* | Core panel system + energy calculator + Google Maps | $800 |
-| Phase 2 | Panel rotation, duplication, and selection system | $450 |
+| Phase 1 | Core panel system + energy calculator + Google Maps | $800 |
+| **Phase 2** *(current)* | Panel rotation, duplication, and selection system | $450 |
 | Phase 3 | Performance optimisation, mobile polish, production hardening | $350 |
 | **Total** | | **$1,600** |
 
 ---
 
-## Phase 1 — Delivered Features
+## Phase 1 + Phase 2 — Delivered Features
 
 Everything below is complete and working in this version.
 
-### Core Panel System
+### Core Panel System (Phase 1)
 - Add solar panels to the design area with one click
 - Drag panels freely to position over the rooftop; boundaries enforced
 - Delete panels by double-clicking, or click to select then press Delete/Backspace
 - Reset all panels at once (with confirmation)
 - Panel count updates in real time
+
+### Advanced Panel Interactions (Phase 2)
+- **Rotate panels** — select a panel to reveal a small rotation handle (8px circle at top-center); drag the handle to freely rotate the panel around its center
+- **Duplicate panels** — Duplicate button (enabled when a panel is selected) creates a new panel cloned from the selected one with the same rotation
+- **Selection state** — panels highlight in red when selected; visual state persists after re-renders
 
 ### Energy Calculator
 - Annual energy production (kWh/year)

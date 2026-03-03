@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.2.0
+**Current Version:** 1.3.0 | **Phase:** 1–2 complete (Phase 3 upcoming)
 
 ---
 
@@ -59,6 +59,24 @@ Panels are too small for a dedicated delete button. Instead:
 
 ### 5. Solar Cell Grid Visual
 Panel divs use CSS `repeating-linear-gradient` to render a **3-column × 5-row** cell grid over a dark navy background. No canvas or SVG needed — purely CSS via `background-image`.
+
+### 6. Panel Rotation (Phase 2)
+- When a panel is selected, a small **8px circular rotation handle** appears at the top-center of the panel
+- Drag the handle to rotate the panel around its center
+- Rotation angle is stored as `panel.rotation` in degrees (0–360°)
+- **Math:** `angle = atan2(mouseY - centerY, mouseX - centerX) × 180/π + 90°` (so 0° = handle pointing "up")
+- Handle is invisible when no panel is selected (CSS `opacity: 0`, `pointer-events: none`)
+- The DOM element uses `transform: rotate(${panel.rotation}deg)` for the visual rotation
+
+### 7. Drag Offset Calculation (Phase 2)
+When dragging a rotated panel, the offset is calculated from the panel's stored `x/y` position (not `getBoundingClientRect()`) to prevent position jumps:
+```javascript
+dragOffset = {
+    x: clientX - areaRect.left - panel.x,
+    y: clientY - areaRect.top - panel.y
+}
+```
+This works correctly regardless of rotation because `panel.x/y` are the logical positions in the panel area's coordinate system.
 
 ---
 

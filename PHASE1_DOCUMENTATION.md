@@ -1,7 +1,8 @@
-# Solar Layout Designer — Phase 1 Documentation
+# Solar Layout Designer — Phase 1–2 Documentation
 
-**Version:** 1.2.0
-**Delivered:** February 2026
+**Version:** 1.3.0 (Phase 2 added)
+**Phase 1 Delivered:** February 2026
+**Phase 2 Delivered:** March 2026
 **Plugin Slug:** `solar-layout-designer`
 
 ---
@@ -19,7 +20,7 @@
 9. [Design Decisions](#design-decisions)
 10. [Known Limitations](#known-limitations)
 11. [Testing Checklist](#testing-checklist)
-12. [Phase 2 Roadmap](#phase-2-roadmap)
+12. [Phase 3 Roadmap](#phase-3-roadmap)
 
 ---
 
@@ -72,6 +73,25 @@ Settings → Solar Designer:
 - Adapts to desktop, tablet, and mobile viewports
 - Touch drag support for tablets and smartphones
 - Controls reflow to single-column on narrow screens
+
+### Phase 2 — Advanced Panel Interactions
+
+**Rotation System:**
+- Select a panel to reveal a small **8px circular handle** at the top-center of the panel
+- Drag the handle to freely rotate the panel around its center
+- Rotation is stored and persists; dragging a rotated panel works smoothly without offset jumps
+- Handle is invisible when no panel is selected (no visual clutter)
+- `panel.rotation` is tracked in degrees (0–360°)
+
+**Duplication:**
+- New **Duplicate** button in the toolbar (only enabled when a panel is selected)
+- Click to create a new panel with the same dimensions and rotation
+- New panel is offset 20px down-right to avoid stacking directly on top
+
+**Selection State:**
+- Panel selection now syncs to the data model (`panel.selected` boolean)
+- Visual selection state persists after re-renders (e.g., after adding a new panel)
+- Deselection happens on reset, panel deletion, or clicking empty space
 
 ---
 
@@ -372,19 +392,27 @@ At the default zoom level 20, one pixel ≈ 14.9 cm on the ground. A 100×160 cm
 
 ---
 
-## Phase 2 Roadmap
+## Phase 3 Roadmap (Upcoming)
+
+### Scope
+Phase 3 focuses on production hardening, performance optimization, and mobile polish.
 
 | Feature | Description |
 |---------|-------------|
-| Layout persistence | Save panel positions to WordPress database per user/post |
-| Panel rotation | Rotate panels to align with angled rooflines |
-| Snap-to-grid | Optional grid snapping for precise layouts |
-| Roof area detection | Draw a polygon over the roof and count max panels that fit |
-| Image export | Export the layout as a PNG for proposals and reports |
-| PDF report generation | Generate a printable solar proposal with layout + calculations |
-| Multiple layouts | Save and compare different layout configurations |
-| Shading analysis | Mark shaded zones that reduce panel output |
+| Performance optimization | Optimize event delegation, reduce repaints, smooth interactions with many panels |
+| Edge case handling | Null checks, boundary validations, graceful fallbacks |
+| Reset refinement | Cleaner state clearing, confirmation dialogs, visual feedback |
+| Mobile interactions | Touch event improvements, responsive layout tweaks, viewport optimizations |
+| Code cleanup | Remove dead code, consolidate helpers, improve maintainability |
+| Console cleanliness | No errors, warnings, or stray logs in production |
+| Stability testing | Verify smooth performance with 50+ panels, stress test PVGIS API calls |
+
+### Acceptance Criteria
+- No errors in browser console
+- Smooth interaction with 50+ panels
+- Mobile experience is touch-optimized and responsive
+- All tests pass; production ready
 
 ---
 
-*Solar Layout Designer — Phase 1 | GPL2 License*
+*Solar Layout Designer — Phase 1–2 Complete | Phase 3 Upcoming | GPL2 License*
