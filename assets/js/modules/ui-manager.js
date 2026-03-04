@@ -49,7 +49,14 @@ class UIManager {
         div.style.width     = panel.width + 'px';
         div.style.height    = panel.height + 'px';
         div.style.transform = `rotate(${panel.rotation}deg)`;
-        div.title = 'Drag: pindah panel | Double-click: hapus panel';
+        div.title = 'Drag: move | Double-click: delete';
+        div.setAttribute('role', 'button');
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('aria-label', `Solar panel #${panel.id + 1}`);
+
+        // Apply entrance animation
+        div.classList.add('sld-panel-enter');
+        setTimeout(() => div.classList.remove('sld-panel-enter'), 300);
 
         // Rotation handle — tiny circle at top-center, only visible when selected
         const handle = document.createElement('div');
@@ -69,20 +76,17 @@ class UIManager {
      * Update statistics display
      */
     updateStats(stats) {
-        document.getElementById('sld-panel-count').textContent    = stats.panelCount;
-        document.getElementById('sld-annual-kwh').textContent     = EnergyCalculator.formatNumber(stats.annualEnergy);
-        document.getElementById('sld-monthly-kwh').textContent    = EnergyCalculator.formatNumber(stats.monthlyAverage);
-        document.getElementById('sld-annual-savings').textContent = EnergyCalculator.formatNumber(stats.annualSavings);
+        const countEl = document.getElementById('sld-panel-count');
+        const annualEl = document.getElementById('sld-annual-kwh');
+        const monthlyEl = document.getElementById('sld-monthly-kwh');
+        const savingsEl = document.getElementById('sld-annual-savings');
+
+        if (countEl) countEl.textContent    = stats.panelCount;
+        if (annualEl) annualEl.textContent     = EnergyCalculator.formatNumber(stats.annualEnergy);
+        if (monthlyEl) monthlyEl.textContent    = EnergyCalculator.formatNumber(stats.monthlyAverage);
+        if (savingsEl) savingsEl.textContent = EnergyCalculator.formatNumber(stats.annualSavings);
     }
 
-    /**
-     * Toggle map visibility (delegated to MapManager)
-     */
-    updateMapVisibility(isVisible) {
-        if (this.mapManager) {
-            this.mapManager.toggleMap(isVisible);
-        }
-    }
 }
 
 window.UIManager = UIManager;

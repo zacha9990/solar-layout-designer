@@ -90,7 +90,7 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     white-space: nowrap;
 }
 
@@ -220,6 +220,7 @@
     user-select: none;
     box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.5);
     pointer-events: auto;
+    touch-action: none;
 }
 
 .sld-panel-item:hover {
@@ -290,6 +291,18 @@
 
 .sld-rotate-handle:hover {
     background: rgba(74, 144, 217, 0.9);
+}
+
+/* Larger touch target for rotation handle */
+.sld-rotate-handle::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
 }
 
 /* Location Info */
@@ -395,28 +408,28 @@
     .solar-designer-container {
         padding: 15px;
     }
-    
+
     .sld-controls-left {
         flex-direction: column;
     }
-    
+
     .sld-btn {
         width: 100%;
     }
-    
+
     .sld-map-background {
-        width: 100% !important;
-        height: 400px !important;
+        width: 100%;
+        max-height: 400px;
     }
 
     .sld-canvas-wrapper {
-        height: 400px !important;
+        max-height: 400px;
     }
-    
+
     .sld-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .sld-input {
         min-width: 100%;
     }
@@ -426,13 +439,17 @@
     .sld-stat-value {
         font-size: 20px;
     }
-    
+
     .sld-stat-highlight .sld-stat-value {
         font-size: 24px;
     }
-    
+
     .sld-canvas-wrapper {
-        height: 300px !important;
+        max-height: 300px;
+    }
+
+    .sld-stats {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -465,10 +482,6 @@
     overflow: hidden !important;
 }
 
-/* Hide Google Maps default UI elements we don't need */
-.gmnoprint {
-    /* Keep zoom controls but style them */
-}
 
 /* Animation for adding panels */
 @keyframes panelAppear {
@@ -480,6 +493,17 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Entrance animation for new panels */
+.sld-panel-enter {
+    animation: panelAppear 0.2s ease;
+}
+
+/* Dragging state */
+body.sld-is-dragging {
+    user-select: none;
+    cursor: grabbing !important;
 }
 
 /* Accessibility */

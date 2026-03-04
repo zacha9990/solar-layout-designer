@@ -11,6 +11,7 @@ class MapManager {
         this.isMapEnabled = false;
         this.currentLocation = null;
         this.onLocationChange = null;
+        this.abortController = null;
     }
     
     /**
@@ -21,10 +22,10 @@ class MapManager {
             console.warn('Google Maps not available');
             return false;
         }
-        
+
         const center = {
-            lat: lat || -6.200000,  // Default: Jakarta
-            lng: lng || 106.816666
+            lat: (lat != null && !isNaN(lat)) ? lat : 40.4168,  // Default: Madrid
+            lng: (lng != null && !isNaN(lng)) ? lng : -3.7038
         };
         
         this.map = new google.maps.Map(this.mapElement, {
@@ -158,6 +159,12 @@ class MapManager {
      * Returns { annualKwhPerKwp, monthlyKwhPerKwp[] } or null on any error.
      */
     async fetchSolarIrradiance(lat, lng, proxyUrl = null) {
+        // Cancel any previous in-flight request
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+        this.abortController = new AbortController();
+
         let url;
         if (proxyUrl) {
             url = `${proxyUrl}&lat=${lat}&lng=${lng}`;
@@ -165,7 +172,7 @@ class MapManager {
             url = `https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=${lat}&lon=${lng}&peakpower=1&loss=14&outputformat=json`;
         }
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: this.abortController.signal });
             if (!response.ok) return null;
             const json = await response.json();
             // Unwrap WordPress wp_send_json_success envelope when using proxy
@@ -178,6 +185,8 @@ class MapManager {
                 monthlyKwhPerKwp: monthly
             };
         } catch (e) {
+            // AbortError is expected when canceling, don't treat it as a real error
+            if (e.name === 'AbortError') return null;
             return null;
         }
     }
@@ -203,27 +212,6 @@ class MapManager {
     }
     
     /**
-     * Get current center coordinates
-     */
-    getCenter() {
-        if (!this.map) return this.currentLocation;
-        
-        const center = this.map.getCenter();
-        return {
-            lat: center.lat(),
-            lng: center.lng()
-        };
-    }
-    
-    /**
-     * Get map bounds (for area calculation later)
-     */
-    getBounds() {
-        if (!this.map) return null;
-        return this.map.getBounds();
-    }
-    
-    /**
      * Resize map when canvas changes
      */
     resize() {
@@ -232,15 +220,6 @@ class MapManager {
         }
     }
     
-    /**
-     * Set map type
-     */
-    setMapType(type) {
-        if (this.map) {
-            this.map.setMapTypeId(type); // 'satellite' or 'hybrid'
-        }
-    }
-
     /**
      * Calculate meters per pixel at the current map center and zoom.
      * Formula: (156543.03392 × cos(lat × π/180)) / 2^zoom

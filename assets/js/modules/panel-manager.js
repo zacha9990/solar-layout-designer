@@ -8,28 +8,8 @@ class SolarPanel {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.rotation = 0; // For Phase 2
-        this.selected = false; // For Phase 2
-    }
-    
-    /**
-     * Check if point is inside panel
-     */
-    contains(x, y) {
-        return x >= this.x && 
-               x <= this.x + this.width && 
-               y >= this.y && 
-               y <= this.y + this.height;
-    }
-    
-    /**
-     * Get center point
-     */
-    getCenter() {
-        return {
-            x: this.x + this.width / 2,
-            y: this.y + this.height / 2
-        };
+        this.rotation = 0; // Phase 2 implemented
+        this.selected = false; // Phase 2 implemented
     }
 }
 
@@ -51,18 +31,18 @@ class PanelManager {
      */
     addPanel() {
         const id = this.panelIdCounter++;
-        
+
         // Calculate grid position
-        const columns = Math.floor(this.canvasWidth / (this.panelWidth + 20));
+        const columns = Math.max(1, Math.floor(this.canvasWidth / (this.panelWidth + 20)));
         const row = Math.floor(this.panels.length / columns);
         const col = this.panels.length % columns;
-        
+
         const x = col * (this.panelWidth + 20) + 50;
         const y = row * (this.panelHeight + 20) + 50;
-        
+
         const panel = new SolarPanel(id, x, y, this.panelWidth, this.panelHeight);
         this.panels.push(panel);
-        
+
         return panel;
     }
     
@@ -76,28 +56,6 @@ class PanelManager {
             return true;
         }
         return false;
-    }
-    
-    /**
-     * Find panel at given coordinates
-     */
-    getPanelAt(x, y) {
-        // Check from top to bottom (last drawn = on top)
-        for (let i = this.panels.length - 1; i >= 0; i--) {
-            if (this.panels[i].contains(x, y)) {
-                return this.panels[i];
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Update panel position
-     */
-    updatePanelPosition(panel, x, y) {
-        // Constrain within canvas
-        panel.x = Math.max(0, Math.min(x, this.canvasWidth - panel.width));
-        panel.y = Math.max(0, Math.min(y, this.canvasHeight - panel.height));
     }
     
     /**

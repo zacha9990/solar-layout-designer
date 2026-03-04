@@ -51,7 +51,7 @@ class SolarDesigner {
         const panelArea   = document.getElementById('sld-panel-area');
         this.uiManager    = new UIManager(panelArea, this.panelManager, this.mapManager);
 
-        const initialRate = parseInt(containerData.rate) || config.defaultRate;
+        const initialRate = parseFloat(containerData.rate) || config.defaultRate;
         this.energyCalculator.setElectricityRate(initialRate);
 
         // Drag state
@@ -124,6 +124,8 @@ class SolarDesigner {
      * Updates the energy calculator and shows/hides the source line.
      */
     async _onLocationReady(lat, lng) {
+        if (!this.mapManager) return;
+
         const dataEl = document.getElementById('sld-solar-data');
         const textEl = document.getElementById('sld-solar-data-text');
         if (!dataEl || !textEl) return;
@@ -195,6 +197,9 @@ class SolarDesigner {
             if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedPanelId !== null) {
                 this.deletePanel(this.selectedPanelId);
             }
+            if (e.key === 'Escape') {
+                this._setSelected(null);
+            }
         });
 
         // Single click → select panel (for keyboard delete)
@@ -203,20 +208,38 @@ class SolarDesigner {
             this._setSelected(div ? parseInt(div.dataset.panelId) : null);
         });
 
-        // Touch support
+        // Click outside panels → deselect
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.sld-panel-item') && !e.target.closest('.sld-btn') && !e.target.closest('.sld-input')) {
+                this._setSelected(null);
+            }
+        }, true);
+
+        // Touch support — with rotation handle priority
         panelArea.addEventListener('touchstart', e => {
             const touch = e.touches[0];
             const el = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!el) return;
             const div = el.closest('.sld-panel-item');
-            if (div) { e.preventDefault(); this._startDrag(div, touch.clientX, touch.clientY); }
+            if (!div) return;
+            // Check for rotation handle first
+            if (el.classList.contains('sld-rotate-handle')) {
+                e.preventDefault();
+                this._startRotate(div, touch.clientX, touch.clientY);
+                return;
+            }
+            e.preventDefault();
+            this._startDrag(div, touch.clientX, touch.clientY);
         }, { passive: false });
 
         document.addEventListener('touchmove', e => {
             if (this.isDragging) { e.preventDefault(); this._moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
         }, { passive: false });
 
-        document.addEventListener('touchend', () => this._endDrag());
+        document.addEventListener('touchend', () => {
+            this._endDrag();
+            this._endRotate();
+        });
 
         window.addEventListener('resize', () => { if (this.mapManager) this.mapManager.resize(); });
     }
@@ -224,17 +247,21 @@ class SolarDesigner {
     // ─── Drag helpers ────────────────────────────────────────────────────────
 
     _startDrag(div, clientX, clientY) {
+        const panel = this.panelManager.panels.find(p => p.id === parseInt(div.dataset.panelId));
+        if (!panel) return;
+
         const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
-        const panel    = this.panelManager.panels.find(p => p.id === parseInt(div.dataset.panelId));
         this.isDragging     = true;
         this.draggedDiv     = div;
         this.draggedPanelId = parseInt(div.dataset.panelId);
+        this._areaRect      = areaRect;
         // Use stored panel.x/y so offset is correct even when the panel is rotated
         this.dragOffset     = {
             x: clientX - areaRect.left - panel.x,
             y: clientY - areaRect.top  - panel.y
         };
-        div.style.cursor = 'grabbing';
+        document.body.style.cursor = 'grabbing';
+        document.body.classList.add('sld-is-dragging');
         div.style.zIndex = '200';
     }
 
@@ -244,7 +271,7 @@ class SolarDesigner {
         const panel    = this.panelManager.panels.find(p => p.id === this.draggedPanelId);
         if (!panel) return;
 
-        const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
+        const areaRect = this._areaRect || document.getElementById('sld-panel-area').getBoundingClientRect();
         let newX = clientX - areaRect.left - this.dragOffset.x;
         let newY = clientY - areaRect.top  - this.dragOffset.y;
 
@@ -271,12 +298,14 @@ class SolarDesigner {
     _endDrag() {
         if (!this.isDragging) return;
         if (this.draggedDiv) {
-            this.draggedDiv.style.cursor = '';
             this.draggedDiv.style.zIndex = '';
         }
+        document.body.style.cursor = '';
+        document.body.classList.remove('sld-is-dragging');
         this.isDragging     = false;
         this.draggedDiv     = null;
         this.draggedPanelId = null;
+        this._areaRect      = null;
     }
 
     // ─── Rotation helpers ─────────────────────────────────────────────────────
@@ -290,7 +319,7 @@ class SolarDesigner {
     _moveRotate(clientX, clientY) {
         const panel = this.panelManager.panels.find(p => p.id === this.rotatingPanelId);
         if (!panel) return;
-        const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
+        const areaRect = this._areaRect || document.getElementById('sld-panel-area').getBoundingClientRect();
         const centerX  = areaRect.left + panel.x + panel.width  / 2;
         const centerY  = areaRect.top  + panel.y + panel.height / 2;
         // +90 so that 0° = handle pointing up (north)
@@ -304,6 +333,7 @@ class SolarDesigner {
         this.isRotating      = false;
         this.rotatingDiv     = null;
         this.rotatingPanelId = null;
+        this._areaRect       = null;
     }
 
     // ─── Actions ─────────────────────────────────────────────────────────────
@@ -316,6 +346,7 @@ class SolarDesigner {
 
     deletePanel(id) {
         if (this.selectedPanelId === id) this._setSelected(null);
+        if (id === this.draggedPanelId) this._endDrag();
         this.panelManager.deletePanel(id);
         this.uiManager.render();
         this.updateCalculations();
@@ -334,6 +365,16 @@ class SolarDesigner {
     reset() {
         if (confirm('Reset all panels?')) {
             this._setSelected(null);
+            this._endDrag();
+            this._endRotate();
+            this.isDragging = false;
+            this.draggedDiv = null;
+            this.draggedPanelId = null;
+            this.dragOffset = { x: 0, y: 0 };
+            this.isRotating = false;
+            this.rotatingDiv = null;
+            this.rotatingPanelId = null;
+            this._areaRect = null;
             this.panelManager.reset();
             this.uiManager.render();
             this.updateCalculations();
@@ -368,11 +409,5 @@ document.addEventListener('DOMContentLoaded', function () {
     const container = document.querySelector('.solar-designer-container');
     if (!container || typeof solarDesignerData === 'undefined') return;
 
-    if (solarDesignerData.mapEnabled && typeof google === 'undefined') {
-        setTimeout(() => {
-            new SolarDesigner('.solar-designer-container', solarDesignerData);
-        }, 1000);
-    } else {
-        new SolarDesigner('.solar-designer-container', solarDesignerData);
-    }
+    new SolarDesigner('.solar-designer-container', solarDesignerData);
 });

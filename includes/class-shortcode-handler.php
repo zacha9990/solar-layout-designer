@@ -74,7 +74,7 @@ class SLD_Shortcode_Handler {
                 <?php else: ?>
                 <div class="sld-controls-right">
                     <p class="sld-notice">
-                        &#128161; <a href="<?php echo admin_url('options-general.php?page=solar-designer-settings'); ?>">
+                        &#128161; <a href="<?php echo esc_url(admin_url('options-general.php?page=solar-designer-settings')); ?>">
                             Configure Google Maps API
                         </a> to enable satellite view background
                     </p>
