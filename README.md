@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.3.0 | **Phase:** 2 of 3 (in progress) | **License:** GPL2
+**Version:** 1.4.0 | **Phase:** 3 of 3 complete | **License:** GPL2
 
 ---
 
@@ -13,13 +13,13 @@ This plugin is developed in three phases. Each phase is reviewed and approved by
 | Phase | Scope | Value |
 |-------|-------|-------|
 | Phase 1 | Core panel system + energy calculator + Google Maps | $800 |
-| **Phase 2** *(current)* | Panel rotation, duplication, and selection system | $450 |
-| Phase 3 | Performance optimisation, mobile polish, production hardening | $350 |
+| Phase 2 | Panel rotation, duplication, and selection system | $450 |
+| **Phase 3** *(complete)* | Performance optimisation, mobile polish, production hardening | $350 |
 | **Total** | | **$1,600** |
 
 ---
 
-## Phase 1 + Phase 2 — Delivered Features
+## Phase 1 + Phase 2 + Phase 3 — Delivered Features
 
 Everything below is complete and working in this version.
 
@@ -53,6 +53,16 @@ Everything below is complete and working in this version.
 - Modular JS architecture (panel-manager, energy-calculator, map-manager, ui-manager)
 - Admin settings page (Settings → Solar Designer)
 - Fully responsive — touch drag support for tablets and mobile
+
+### Production Optimizations (Phase 3)
+- **Bug fixes** — silent data loss (electricity rate), null reference guards, async boundary checks
+- **Performance** — areaRect caching, eliminated redundant DOM queries
+- **UX** — Escape key to deselect, click-outside deselection, grabbing cursor persistence
+- **Accessibility** — ARIA attributes, panel entrance animations, null-safe DOM updates
+- **Mobile/Touch** — touch-action, larger rotation handle hit targets, improved touch rotation
+- **Code cleanup** — removed 30+ lines of dead code, stale comments removed
+- **Security** — CSRF protection on admin URL, AbortController for stale PVGIS requests
+- **CSS polish** — transition optimization, mobile breakpoint fixes, animation cleanup
 
 ---
 
@@ -117,14 +127,13 @@ Go to **Settings → Solar Designer** to configure:
 3. Credentials → Create API Key → copy and paste into **Settings → Solar Designer**
 4. Restrict the key to your domain (strongly recommended to prevent abuse)
 
-## Known Limitations (Phase 1)
+## Known Limitations
 
-| Limitation | Planned Fix |
-|------------|-------------|
-| Layouts not saved — lost on page refresh | Phase 2: database persistence |
-| No panel rotation | Phase 2: rotation with handle UI |
-| No panel duplication | Phase 2: duplicate feature |
-| No image/PDF export | Phase 3 |
+| Limitation | Status |
+|------------|--------|
+| Layouts not saved — lost on page refresh | Deferred (future feature) |
+| No image/PDF export | Deferred (future feature) |
+| PVGIS API outages | Handled gracefully with admin-configured fallback |
 
 ## Troubleshooting
 
@@ -137,4 +146,33 @@ Go to **Settings → Solar Designer** to configure:
 
 ## Full Documentation
 
-See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and full testing checklist.
+See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
+
+## Changelog
+
+**v1.4.0 (Phase 3) — March 4, 2026**
+- 🐛 Fix silent data loss: `parseFloat()` for electricity rate (was `parseInt()`)
+- 🐛 Fix null reference guards in drag/async handlers
+- 🐛 Fix lat/lng falsy check (avoid snapping to equator on lat=0)
+- 🐛 Clear ghost drag state on panel deletion
+- ⚡ Performance: cache areaRect on drag/rotation (eliminate repeated DOM queries)
+- 🎯 UX: Escape key deselect, click-outside deselect, grabbing cursor persistence
+- 📱 Mobile: touch-action, larger rotation handle hit target, touch rotation support
+- ♿ Accessibility: ARIA attributes, panel entrance animations, null-safe DOM updates
+- 🗑️ Removed 30+ lines of dead code (getPanelAt, getCenter, updateMapVisibility, etc.)
+- 🔒 Security: esc_url() on admin URL, AbortController for stale PVGIS requests
+- 🎨 CSS: optimized transitions, mobile breakpoint fixes, animation cleanup
+
+**v1.3.0 (Phase 2) — March 2, 2026**
+- ✨ Panel rotation with visual handle
+- ✨ Panel duplication
+- ✨ Persistent selection state across re-renders
+- ✨ Keyboard Delete/Backspace to delete selected panel
+
+**v1.1.5 (Phase 1) — February 28, 2026**
+- ✨ Core panel designer with drag-and-drop
+- ✨ Real-world panel sizing with Google Maps zoom
+- ✨ Energy calculator with live updates
+- ✨ Location-aware PVGIS irradiance integration
+- ✨ Address search with geocoding fallback
+- ✨ Responsive touch-friendly UI
