@@ -41,33 +41,35 @@ class SLD_Shortcode_Handler {
             <!-- Controls -->
             <div class="sld-controls">
                 <div class="sld-controls-left">
-                    <button id="sld-add-panel" class="sld-btn sld-btn-primary">
-                        &#10010; Add Panel
-                    </button>
-                    <button id="sld-reset" class="sld-btn sld-btn-secondary">
-                        &#8635; Reset All
-                    </button>
-                    <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first">
-                        &#10064; Duplicate
-                    </button>
+                    <div class="sld-btn-group">
+                        <button id="sld-add-panel" class="sld-btn sld-btn-primary" title="Add a new solar panel">
+                            ☀ Add Panel
+                        </button>
+                        <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels">
+                            ↻ Reset All
+                        </button>
+                        <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first">
+                            ⬚ Duplicate
+                        </button>
+                    </div>
                 </div>
 
                 <?php if ($has_maps): ?>
                 <div class="sld-controls-right">
                     <div class="sld-map-controls">
-                        <label for="sld-address-search">Search Location:</label>
+                        <label for="sld-address-search">Location:</label>
                         <input type="text"
                                id="sld-address-search"
                                class="sld-input"
-                               placeholder="Enter address or place...">
-                        <button id="sld-search-btn" class="sld-btn sld-btn-primary">
-                            &#128269; Search
+                               placeholder="Search address...">
+                        <button id="sld-search-btn" class="sld-btn sld-btn-primary" title="Search for location">
+                            🔍 Go
                         </button>
                     </div>
                     <div class="sld-toggle-controls">
-                        <label>
+                        <label for="sld-toggle-map">
                             <input type="checkbox" id="sld-toggle-map" checked>
-                            Show Satellite View
+                            Satellite View
                         </label>
                     </div>
                 </div>
@@ -94,7 +96,7 @@ class SLD_Shortcode_Handler {
                     <p class="sld-helper-text">Click &ldquo;Add Panel&rdquo; to start designing</p>
                 </div>
                 <div class="sld-panel-hint">
-                    Drag: move &nbsp;|&nbsp; Double-click: delete &nbsp;|&nbsp; Select &#9679; rotate (top handle) or duplicate
+                    Drag to move • Double-click to delete • Select to rotate or duplicate
                 </div>
             </div>
 
