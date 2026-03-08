@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.5.2 | **Phase:** 4 complete + mobile fixes | **License:** GPL2
+**Version:** 1.5.3 | **Phase:** 4 complete + mobile fixes | **License:** GPL2
 
 ---
 
@@ -149,6 +149,14 @@ Go to **Settings → Solar Designer** to configure:
 See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
 
 ## Changelog
+
+**v1.5.3 — March 8, 2026**
+- 📱 Mobile toolbar: icon-only buttons (44×44px touch targets) — text labels hidden on ≤768px
+- 📱 Mobile hint text: touch-specific instructions ("Tap · Drag · Double-tap")
+- 📱 Stats layout: keeps 2-column at 480px; Rate + Savings span full width
+- 📱 Container goes edge-to-edge (no border radius / margin) at 480px
+- 🎛️ Satellite view checkbox styled as a proper toggle switch (pill + sliding dot)
+- ♿ `aria-label` added to all icon buttons for screen reader support
 
 **v1.5.2 — March 8, 2026**
 - 🐛 Fix rotation handle overlapping panel body on mobile — moved handle above panel top edge (`top: -14px`) so touch-to-drag no longer triggers rotation accidentally

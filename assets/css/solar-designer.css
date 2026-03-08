@@ -114,6 +114,10 @@
 
 /* Buttons */
 .sld-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 10px 18px;
     border: none;
     border-radius: var(--sld-radius-sm);
@@ -123,6 +127,12 @@
     cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     white-space: nowrap;
+}
+
+.sld-btn-icon {
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 .sld-btn-primary {
@@ -313,6 +323,50 @@
     text-align: center;
 }
 
+.sld-hint-mobile { display: none; }
+.sld-hint-desktop { display: inline; }
+
+/* Satellite view toggle switch */
+.sld-toggle-controls input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 36px;
+    height: 20px;
+    background: var(--sld-border);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.sld-toggle-controls input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.sld-toggle-controls input[type="checkbox"]:checked {
+    background: var(--sld-blue);
+}
+
+.sld-toggle-controls input[type="checkbox"]:checked::after {
+    transform: translateX(16px);
+}
+
+.sld-toggle-controls input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--sld-blue);
+    outline-offset: 2px;
+}
+
 /* Selected state */
 .sld-panel-item.sld-panel-selected {
     border-color: var(--sld-red);
@@ -476,7 +530,8 @@
 
     .sld-controls {
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
+        padding: 8px 12px;
     }
 
     .sld-controls-left,
@@ -484,9 +539,25 @@
         width: 100%;
     }
 
+    /* Icon-only buttons — square 44×44px touch targets */
+    .sld-btn-label {
+        display: none;
+    }
+
     .sld-btn {
-        flex: 1;
-        min-width: 100px;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+    }
+
+    .sld-btn-icon {
+        font-size: 18px;
+    }
+
+    /* Hide "Location:" label — input is self-explanatory */
+    .sld-map-controls label {
+        display: none;
     }
 
     .sld-map-background {
@@ -510,11 +581,24 @@
     .sld-stat-value {
         font-size: 24px;
     }
+
+    /* Switch to mobile hint text */
+    .sld-hint-desktop { display: none; }
+    .sld-hint-mobile  { display: inline; }
+
+    /* Hide coordinate badge — not useful at a glance on mobile */
+    .sld-location-info {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
     .solar-designer-container {
         padding: 12px;
+        margin: 0;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
     }
 
     .sld-stat-value {
@@ -525,9 +609,16 @@
         max-height: 300px;
     }
 
+    /* Keep 2-column stats — 1-column wastes too much vertical space */
     .sld-stats {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    /* Rate input and Savings: span full width for better readability */
+    .sld-stat-item:nth-child(4),
+    .sld-stat-item:nth-child(5) {
+        grid-column: 1 / -1;
     }
 
     .sld-input {
@@ -535,7 +626,8 @@
     }
 
     .sld-stat-item {
-        padding: 12px 16px;
+        padding: 12px 14px;
+        gap: 8px;
     }
 }
 

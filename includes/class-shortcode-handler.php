@@ -42,14 +42,17 @@ class SLD_Shortcode_Handler {
             <div class="sld-controls">
                 <div class="sld-controls-left">
                     <div class="sld-btn-group">
-                        <button id="sld-add-panel" class="sld-btn sld-btn-primary" title="Add a new solar panel">
-                            ☀ Add Panel
+                        <button id="sld-add-panel" class="sld-btn sld-btn-primary" title="Add a new solar panel" aria-label="Add Panel">
+                            <span class="sld-btn-icon" aria-hidden="true">☀</span>
+                            <span class="sld-btn-label">Add Panel</span>
                         </button>
-                        <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels">
-                            ↻ Reset All
+                        <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
+                            <span class="sld-btn-icon" aria-hidden="true">↻</span>
+                            <span class="sld-btn-label">Reset All</span>
                         </button>
-                        <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first">
-                            ⬚ Duplicate
+                        <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first" aria-label="Duplicate">
+                            <span class="sld-btn-icon" aria-hidden="true">⬚</span>
+                            <span class="sld-btn-label">Duplicate</span>
                         </button>
                     </div>
                 </div>
@@ -62,8 +65,9 @@ class SLD_Shortcode_Handler {
                                id="sld-address-search"
                                class="sld-input"
                                placeholder="Search address...">
-                        <button id="sld-search-btn" class="sld-btn sld-btn-primary" title="Search for location">
-                            🔍 Go
+                        <button id="sld-search-btn" class="sld-btn sld-btn-primary" title="Search for location" aria-label="Search">
+                            <span class="sld-btn-icon" aria-hidden="true">🔍</span>
+                            <span class="sld-btn-label">Go</span>
                         </button>
                     </div>
                     <div class="sld-toggle-controls">
@@ -96,7 +100,8 @@ class SLD_Shortcode_Handler {
                     <p class="sld-helper-text">Click &ldquo;Add Panel&rdquo; to start designing</p>
                 </div>
                 <div class="sld-panel-hint">
-                    Drag to move • Double-click to delete • Select to rotate or duplicate
+                    <span class="sld-hint-desktop">Drag to move · Double-click to delete · Select to rotate or duplicate</span>
+                    <span class="sld-hint-mobile">Tap to select · Drag to move · Double-tap to delete</span>
                 </div>
             </div>
 
