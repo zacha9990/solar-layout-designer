@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.4.0 | **Phase:** 1–3 complete
+**Current Version:** 1.5.2 | **Phase:** 1–4 complete + mobile fixes
 
 ---
 

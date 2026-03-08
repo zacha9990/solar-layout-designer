@@ -68,6 +68,14 @@ class SolarDesigner {
         // Selection state (for keyboard delete / rotate / duplicate)
         this.selectedPanelId = null;
 
+        // Touch state — tap/drag/double-tap disambiguation
+        this._touchStartX     = 0;
+        this._touchStartY     = 0;
+        this._touchPendingDiv = null;
+        this._touchDragStarted = false;
+        this._lastTapTime     = 0;
+        this._lastTapPanelId  = null;
+
         // Calculate correct panel pixel size based on map zoom + latitude
         this._updatePanelSize();
 
@@ -215,30 +223,91 @@ class SolarDesigner {
             }
         }, true);
 
-        // Touch support — with rotation handle priority
+        // Touch support — tap-to-select, drag, rotation, and double-tap-to-delete
         panelArea.addEventListener('touchstart', e => {
             const touch = e.touches[0];
             const el = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!el) return;
             const div = el.closest('.sld-panel-item');
             if (!div) return;
-            // Check for rotation handle first
+
+            // Rotation handle takes priority
             if (el.classList.contains('sld-rotate-handle')) {
                 e.preventDefault();
                 this._startRotate(div, touch.clientX, touch.clientY);
                 return;
             }
+
             e.preventDefault();
-            this._startDrag(div, touch.clientX, touch.clientY);
+            // Record start position for tap vs. drag disambiguation
+            this._touchStartX      = touch.clientX;
+            this._touchStartY      = touch.clientY;
+            this._touchPendingDiv  = div;
+            this._touchDragStarted = false;
+
+            // Select immediately so rotation handle becomes visible for a follow-up touch
+            this._setSelected(parseInt(div.dataset.panelId));
         }, { passive: false });
 
         document.addEventListener('touchmove', e => {
-            if (this.isDragging) { e.preventDefault(); this._moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
+            // Rotation
+            if (this.isRotating) {
+                e.preventDefault();
+                this._moveRotate(e.touches[0].clientX, e.touches[0].clientY);
+                return;
+            }
+
+            // Drag — lazily started once finger moves > 5px
+            const touch = e.touches[0];
+            if (!this._touchDragStarted && this._touchPendingDiv) {
+                const dx = touch.clientX - this._touchStartX;
+                const dy = touch.clientY - this._touchStartY;
+                if (Math.hypot(dx, dy) > 5) {
+                    this._touchDragStarted = true;
+                    // Use original touch-down position for correct drag offset
+                    this._startDrag(this._touchPendingDiv, this._touchStartX, this._touchStartY);
+                    e.preventDefault();
+                    this._moveDrag(touch.clientX, touch.clientY);
+                }
+                return;
+            }
+
+            if (this.isDragging) {
+                e.preventDefault();
+                this._moveDrag(touch.clientX, touch.clientY);
+            }
         }, { passive: false });
 
         document.addEventListener('touchend', () => {
-            this._endDrag();
-            this._endRotate();
+            if (this.isRotating) {
+                this._endRotate();
+                this._touchPendingDiv  = null;
+                return;
+            }
+
+            if (this.isDragging) {
+                this._endDrag();
+                this._touchPendingDiv  = null;
+                this._touchDragStarted = false;
+                return;
+            }
+
+            // It was a tap — check for double-tap (delete)
+            if (this._touchPendingDiv) {
+                const panelId = parseInt(this._touchPendingDiv.dataset.panelId);
+                const now = Date.now();
+                if (this._lastTapPanelId === panelId && (now - this._lastTapTime) < 300) {
+                    this.deletePanel(panelId);
+                    this._lastTapTime    = 0;
+                    this._lastTapPanelId = null;
+                } else {
+                    this._lastTapTime    = now;
+                    this._lastTapPanelId = panelId;
+                }
+            }
+
+            this._touchPendingDiv  = null;
+            this._touchDragStarted = false;
         });
 
         window.addEventListener('resize', () => { if (this.mapManager) this.mapManager.resize(); });
@@ -314,6 +383,7 @@ class SolarDesigner {
         this.isRotating      = true;
         this.rotatingDiv     = panelDiv;
         this.rotatingPanelId = parseInt(panelDiv.dataset.panelId);
+        this._areaRect       = document.getElementById('sld-panel-area').getBoundingClientRect();
     }
 
     _moveRotate(clientX, clientY) {

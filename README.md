@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.4.0 | **Phase:** 3 of 3 complete | **License:** GPL2
+**Version:** 1.5.2 | **Phase:** 4 complete + mobile fixes | **License:** GPL2
 
 ---
 
@@ -149,6 +149,23 @@ Go to **Settings → Solar Designer** to configure:
 See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
 
 ## Changelog
+
+**v1.5.2 — March 8, 2026**
+- 🐛 Fix rotation handle overlapping panel body on mobile — moved handle above panel top edge (`top: -14px`) so touch-to-drag no longer triggers rotation accidentally
+
+**v1.5.1 — March 8, 2026**
+- 📱 Mobile touch parity: tap-to-select, lazy drag (>5px threshold), touch rotation, double-tap-to-delete
+- 🐛 Fix rotation not firing on mobile (`touchmove` now calls `_moveRotate`)
+- 🐛 Fix panel selection failing on mobile (`touchstart` directly calls `_setSelected`)
+- 🐛 Fix drag conflicting with select — drag now lazily initialised after 5px movement
+- 🐛 Fix missing delete on mobile — double-tap within 300ms deletes selected panel
+- 🐛 Fix rotation offset stale cache — `_startRotate` now stores `_areaRect`
+
+**v1.5.0 (Phase 4) — March 4, 2026**
+- 🎨 Modern UI redesign — clean minimal SaaS aesthetic
+- 🎨 CSS design tokens (blue, surface, border, text hierarchy, accent colours)
+- 🎨 Card-based stats grid, amber savings highlight, ghost-style secondary buttons
+- 🎨 Improved responsive layout at 1024px / 768px / 480px breakpoints
 
 **v1.4.0 (Phase 3) — March 4, 2026**
 - 🐛 Fix silent data loss: `parseFloat()` for electricity rate (was `parseInt()`)
