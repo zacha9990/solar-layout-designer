@@ -72,13 +72,15 @@ class PanelManager {
         const original = this.panels.find(p => p.id === id);
         if (!original) return null;
         const newId = this.panelIdCounter++;
-        const panel = new SolarPanel(
-            newId,
-            Math.min(original.x + 20, Math.max(0, this.canvasWidth  - original.width)),
-            Math.min(original.y + 20, Math.max(0, this.canvasHeight - original.height)),
-            original.width,
-            original.height
-        );
+        const gap = 10;
+        let newX = original.x + original.width + gap;
+        let newY = original.y;
+        // If it goes off the right edge, wrap to same y but clamp
+        if (newX + original.width > this.canvasWidth) {
+            newX = Math.max(0, this.canvasWidth - original.width);
+        }
+        newY = Math.min(newY, Math.max(0, this.canvasHeight - original.height));
+        const panel = new SolarPanel(newId, newX, newY, original.width, original.height);
         panel.rotation = original.rotation;
         this.panels.push(panel);
         return panel;

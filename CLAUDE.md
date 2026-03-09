@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.5.2 | **Phase:** 1–4 complete + mobile fixes
+**Current Version:** 1.5.4 | **Phase:** 1–4 complete + mobile fixes + UX patches
 
 ---
 
@@ -49,7 +49,7 @@ metersPerPixel = (156543.03392 × cos(lat × π/180)) / 2^zoom
 pixelSize = (cm / 100) / metersPerPixel
 ```
 
-Pixel size is clamped: **min 15×24 px**, **max 120×192 px**.
+Pixel size is clamped: **min 40×64 px**, **max 150×240 px**.
 Recalculated on every `zoom_changed` map event.
 
 ### 4. Delete UX (no delete button)
@@ -68,7 +68,12 @@ Panel divs use CSS `repeating-linear-gradient` to render a **3-column × 5-row**
 - Handle is invisible when no panel is selected (CSS `opacity: 0`, `pointer-events: none`)
 - The DOM element uses `transform: rotate(${panel.rotation}deg)` for the visual rotation
 
-### 7. Drag Offset Calculation (Phase 2)
+### 7. Duplicate Placement
+Duplicated panel is placed **directly to the right** of the original (same `y`, `x = original.x + original.width + 10px gap`).
+If the new position would overflow the right edge of the canvas, `newX` is clamped to `canvasWidth - panelWidth`.
+`y` is always preserved so the duplicate stays on the same row as the source panel.
+
+### 8. Drag Offset Calculation (Phase 2)
 When dragging a rotated panel, the offset is calculated from the panel's stored `x/y` position (not `getBoundingClientRect()`) to prevent position jumps:
 ```javascript
 dragOffset = {

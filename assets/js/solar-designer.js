@@ -104,8 +104,8 @@ class SolarDesigner {
      * Max size prevents panels from becoming enormous when zoomed in very close.
      */
     _updatePanelSize() {
-        const MIN_W = 15, MIN_H = 24;
-        const MAX_W = 120, MAX_H = 192;
+        const MIN_W = 40, MIN_H = 64;
+        const MAX_W = 150, MAX_H = 240;
 
         let widthPx, heightPx;
 

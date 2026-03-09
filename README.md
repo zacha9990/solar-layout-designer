@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.5.3 | **Phase:** 4 complete + mobile fixes | **License:** GPL2
+**Version:** 1.5.4 | **Phase:** 4 complete + mobile fixes + UX patches | **License:** GPL2
 
 ---
 
@@ -32,7 +32,7 @@ Everything below is complete and working in this version.
 
 ### Advanced Panel Interactions (Phase 2)
 - **Rotate panels** — select a panel to reveal a small rotation handle (8px circle at top-center); drag the handle to freely rotate the panel around its center
-- **Duplicate panels** — Duplicate button (enabled when a panel is selected) creates a new panel cloned from the selected one with the same rotation
+- **Duplicate panels** — Duplicate button (enabled when a panel is selected) creates a new panel cloned from the selected one, placed directly to the right on the same row, with the same rotation
 - **Selection state** — panels highlight in red when selected; visual state persists after re-renders
 
 ### Energy Calculator
@@ -149,6 +149,11 @@ Go to **Settings → Solar Designer** to configure:
 See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
 
 ## Changelog
+
+**v1.5.4 — March 9, 2026**
+- 🔍 Increased minimum panel pixel size from 15×24 → 40×64 px for better visibility at all zoom levels
+- 🔍 Increased maximum panel pixel size from 120×192 → 150×240 px
+- 🐛 Fix duplicate panel placement: was offset diagonally (+20px right, +20px down); now places panel directly to the right (same row, +10px gap after panel edge)
 
 **v1.5.3 — March 8, 2026**
 - 📱 Mobile toolbar: icon-only buttons (44×44px touch targets) — text labels hidden on ≤768px
