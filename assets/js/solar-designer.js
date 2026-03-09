@@ -11,10 +11,15 @@ class SolarDesigner {
         this.designWidth  = parseInt(containerData.width)  || 800;
         this.designHeight = parseInt(containerData.height) || 600;
 
-        // Set wrapper height explicitly (panel area uses position:absolute)
+        // Set wrapper height explicitly (panel area uses position:absolute).
+        // On mobile we cap at 50vh so the floating panel below is always visible.
         const wrapper = this.container.querySelector('.sld-canvas-wrapper');
         if (wrapper) {
-            wrapper.style.height = this.designHeight + 'px';
+            if (window.innerWidth <= 768) {
+                wrapper.style.height = Math.round(window.innerHeight * 0.82) + 'px';
+            } else {
+                wrapper.style.height = this.designHeight + 'px';
+            }
         }
 
         // Initialize Map Manager if maps are enabled
@@ -104,8 +109,8 @@ class SolarDesigner {
      * Max size prevents panels from becoming enormous when zoomed in very close.
      */
     _updatePanelSize() {
-        const MIN_W = 25, MIN_H = 40;
-        const MAX_W = 150, MAX_H = 240;
+        const MIN_W = 6, MIN_H = 10;
+        const MAX_W = 400, MAX_H = 640;
 
         let widthPx, heightPx;
 
@@ -120,6 +125,25 @@ class SolarDesigner {
             // No map: treat config values directly as pixels (grid mode)
             widthPx  = this.config.panelSpecs.width;
             heightPx = this.config.panelSpecs.height;
+        }
+
+        // Reposition existing panels proportionally so they stay on the same
+        // roof spot when zoom changes (map zooms toward its center = canvas center).
+        const oldW = this.panelManager.panelWidth;
+        const oldH = this.panelManager.panelHeight;
+        if (this.panelManager.panels.length > 0 && oldW > 0 && oldW !== widthPx) {
+            const scale = widthPx / oldW;
+            const cw    = this.designWidth;
+            const ch    = this.designHeight;
+            this.panelManager.panels.forEach(p => {
+                // Compute old panel center, scale it from canvas center, derive new top-left
+                const cx = p.x + oldW / 2;
+                const cy = p.y + oldH / 2;
+                const newCx = (cx - cw / 2) * scale + cw / 2;
+                const newCy = (cy - ch / 2) * scale + ch / 2;
+                p.x = Math.max(0, Math.min(newCx - widthPx / 2, cw - widthPx));
+                p.y = Math.max(0, Math.min(newCy - heightPx / 2, ch - heightPx));
+            });
         }
 
         this.panelManager.resizePanels(widthPx, heightPx);
@@ -216,12 +240,18 @@ class SolarDesigner {
             this._setSelected(div ? parseInt(div.dataset.panelId) : null);
         });
 
-        // Click outside panels → deselect
+        // Click outside panels → deselect (exclude mobile float to preserve selection while using controls)
         document.addEventListener('click', e => {
-            if (!e.target.closest('.sld-panel-item') && !e.target.closest('.sld-btn') && !e.target.closest('.sld-input')) {
+            if (!e.target.closest('.sld-panel-item') &&
+                !e.target.closest('.sld-btn') &&
+                !e.target.closest('.sld-input') &&
+                !e.target.closest('.sld-mobile-float') &&
+                !e.target.closest('.sld-dpad')) {
                 this._setSelected(null);
             }
         }, true);
+
+        this._setupMobileControls();
 
         // Touch support — tap-to-select, drag, rotation, and double-tap-to-delete
         panelArea.addEventListener('touchstart', e => {
@@ -313,6 +343,98 @@ class SolarDesigner {
         window.addEventListener('resize', () => { if (this.mapManager) this.mapManager.resize(); });
     }
 
+    // ─── Mobile floating panel controls ──────────────────────────────────────
+
+    _setupMobileControls() {
+        // Action buttons — wire to same handlers as desktop
+        const addMob = document.getElementById('sld-add-panel-mob');
+        if (addMob) addMob.addEventListener('click', () => this.addPanel());
+
+        const resetMob = document.getElementById('sld-reset-mob');
+        if (resetMob) resetMob.addEventListener('click', () => this.reset());
+
+        const dupMob = document.getElementById('sld-duplicate-mob');
+        if (dupMob) dupMob.addEventListener('click', () => this.duplicatePanel());
+
+        // Rate input mirror
+        const rateMob = document.getElementById('sld-rate-input-mob');
+        if (rateMob) {
+            rateMob.addEventListener('change', e => {
+                this.updateRate(e.target.value);
+                const desktopRate = document.getElementById('sld-rate-input');
+                if (desktopRate) desktopRate.value = e.target.value;
+            });
+        }
+
+        // Address search — wire mobile input to same MapManager handler
+        const searchInputMob = document.getElementById('sld-address-search-mob');
+        const searchBtnMob   = document.getElementById('sld-search-btn-mob');
+        if (searchInputMob && searchBtnMob && this.mapManager) {
+            this.mapManager.setupAddressSearch(searchInputMob, searchBtnMob);
+        }
+
+        // Satellite toggle mirror
+        const mapToggleMob = document.getElementById('sld-toggle-map-mob');
+        if (mapToggleMob && this.mapManager) {
+            mapToggleMob.addEventListener('change', e => {
+                this.toggleMap(e.target.checked);
+                const desktopToggle = document.getElementById('sld-toggle-map');
+                if (desktopToggle) desktopToggle.checked = e.target.checked;
+            });
+        }
+
+        // D-pad — tap to move 8px, hold for continuous movement
+        const dpadBtns = document.querySelectorAll('.sld-dpad-btn');
+        dpadBtns.forEach(btn => {
+            let holdTimer = null;
+
+            const doMove = () => this.moveSelectedPanel(btn.dataset.dir);
+
+            const startMove = e => {
+                e.preventDefault();
+                doMove();
+                holdTimer = setInterval(doMove, 80);
+            };
+
+            const stopMove = () => {
+                if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
+            };
+
+            btn.addEventListener('mousedown',  startMove);
+            btn.addEventListener('touchstart', startMove, { passive: false });
+            btn.addEventListener('mouseup',    stopMove);
+            btn.addEventListener('mouseleave', stopMove);
+            btn.addEventListener('touchend',   stopMove);
+        });
+    }
+
+    /**
+     * Move the currently selected panel by step pixels in the given direction.
+     * Clamps to panel area bounds.
+     */
+    moveSelectedPanel(dir, step = 3) {
+        if (this.selectedPanelId === null) return;
+        const panel = this.panelManager.panels.find(p => p.id === this.selectedPanelId);
+        if (!panel) return;
+
+        const areaRect = document.getElementById('sld-panel-area').getBoundingClientRect();
+        const maxX = areaRect.width  - panel.width;
+        const maxY = areaRect.height - panel.height;
+
+        switch (dir) {
+            case 'up':    panel.y = Math.max(0, panel.y - step); break;
+            case 'down':  panel.y = Math.min(maxY, panel.y + step); break;
+            case 'left':  panel.x = Math.max(0, panel.x - step); break;
+            case 'right': panel.x = Math.min(maxX, panel.x + step); break;
+        }
+
+        const div = document.querySelector(`.sld-panel-item[data-panel-id="${panel.id}"]`);
+        if (div) {
+            div.style.left = panel.x + 'px';
+            div.style.top  = panel.y + 'px';
+        }
+    }
+
     // ─── Drag helpers ────────────────────────────────────────────────────────
 
     _startDrag(div, clientX, clientY) {
@@ -359,9 +481,13 @@ class SolarDesigner {
         document.querySelectorAll('.sld-panel-item').forEach(el => {
             el.classList.toggle('sld-panel-selected', parseInt(el.dataset.panelId) === panelId);
         });
-        // Enable/disable duplicate button
-        const dupBtn = document.getElementById('sld-duplicate');
-        if (dupBtn) dupBtn.disabled = (panelId === null);
+        // Enable/disable duplicate buttons (desktop + mobile)
+        const noneSelected = (panelId === null);
+        [document.getElementById('sld-duplicate'), document.getElementById('sld-duplicate-mob')]
+            .forEach(btn => { if (btn) btn.disabled = noneSelected; });
+        // Activate/deactivate d-pad
+        const dpad = document.getElementById('sld-dpad');
+        if (dpad) dpad.classList.toggle('sld-dpad-active', !noneSelected);
     }
 
     _endDrag() {

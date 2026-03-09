@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.5.5 | **Phase:** 1–4 complete + mobile fixes + UX patches
+**Current Version:** 1.5.7 | **Phase:** 1–4 complete + mobile fixes + UX patches
 
 ---
 
@@ -49,7 +49,7 @@ metersPerPixel = (156543.03392 × cos(lat × π/180)) / 2^zoom
 pixelSize = (cm / 100) / metersPerPixel
 ```
 
-Pixel size is clamped: **min 25×40 px**, **max 150×240 px**.
+Pixel size is clamped: **min 6×10 px**, **max 400×640 px**.
 Recalculated on every `zoom_changed` map event.
 
 ### 4. Delete UX (no delete button)
