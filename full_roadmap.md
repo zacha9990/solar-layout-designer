@@ -199,11 +199,14 @@ Referensi teknis lengkap: lihat `PHASE5_PLAN.md`
 
 ---
 
-## 💳 Struktur Pembayaran Tahap 5 ($2,300)
+## 💳 Struktur Pembayaran Tahap 5
 
-- **20% ($460)** → Mulai pengerjaan (SolarApiManager + settings + fetch data)
-- **40% ($920)** → Overlay segmen warna + tooltip + kalkulasi berbasis segmen sudah bisa diuji
-- **40% ($920)** → Heatmap pixel-level + tabel analisis atap + testing selesai dan disetujui
+**Core: $1,600**
+- **20% ($320)** → Mulai pengerjaan (SolarApiManager + settings + fetch data)
+- **40% ($640)** → Overlay segmen warna + tooltip + kalkulasi berbasis segmen sudah bisa diuji
+- **40% ($640)** → Tabel analisis atap + testing selesai dan disetujui
+
+**Add-on Heatmap Pixel-level: +$500** *(opsional, disepakati terpisah)*
 
 ---
 
@@ -224,7 +227,7 @@ Referensi lengkap: lihat `PHASE6_PROPOSAL.md`
 | Tahap 2 | $450 | ✅ Selesai |
 | Tahap 3 | $350 | ✅ Selesai |
 | Tahap 4 | — | ✅ Selesai |
-| Tahap 5 | $2,300 | 🔜 Berikutnya |
+| Tahap 5 | $1,600 (+$500 add-on) | 🔜 Berikutnya |
 | Tahap 6 | $2,700 | 💡 Proposal |
 | **Total (1–3)** | **$1,600** | |
 

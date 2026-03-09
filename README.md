@@ -16,7 +16,7 @@ This plugin is developed in three phases. Each phase is reviewed and approved by
 | Phase 2 | Panel rotation, duplication, and selection system | ✅ Complete | $450 |
 | Phase 3 | Performance optimisation, mobile polish, production hardening | ✅ Complete | $350 |
 | Phase 4 | UI redesign + mobile floating panel with D-pad | ✅ Complete | — |
-| **Phase 5** | Google Solar API — roof orientation & irradiance overlay | 🔜 Next | $2,300 |
+| **Phase 5** | Google Solar API — roof orientation & irradiance overlay | 🔜 Next | $1,600 (+$500 heatmap add-on) |
 | Phase 6 | Design persistence + PDF/CSV export | 💡 Proposed | $2,700 |
 | **Total (Ph 1–3)** | | | **$1,600** |
 

@@ -190,6 +190,8 @@ Add `sld_google_solar_api_key` to the settings page. In most cases this will be 
 
 ## Implementation Roadmap
 
+**Core (included in base price):**
+
 | Sprint | Task | Effort |
 |--------|------|--------|
 | 1 | `SolarApiManager` class; Settings field; `wp_localize_script` passthrough | 2h |
@@ -197,12 +199,18 @@ Add `sld_google_solar_api_key` to the settings page. In most cases this will be 
 | 2 | Render segment color polygons on map; toggle on/off | 3h |
 | 2 | Segment click tooltip (direction, pitch, area, kWh/year) | 2h |
 | 3 | Per-segment energy calculation; `segmentId` on panels; fallback chain | 3h |
-| 3 | Roof analysis summary panel (desktop table + mobile cards) | 3h |
-| 4 | Pixel-level flux heatmap (GeoTIFF → PNG via PHP; `ImageMapType` overlay) | 4h |
-| 4 | Heatmap legend; mobile heatmap toggle | 1h |
-| 5 | Testing, edge cases (no Solar data, bad coords, API quota), polish | 3h |
-| 5 | Documentation update | 1h |
-| | **Total** | **23h (~3 weeks @ 8h/week)** |
+| 3 | Roof analysis summary panel (desktop table + mobile cards) | 2h |
+| 4 | Testing, edge cases (no Solar data, bad coords, API quota), polish | 2h |
+| 4 | Documentation update | 1h |
+| | **Core Total** | **16h** |
+
+**Add-on (optional, quoted separately):**
+
+| Task | Effort |
+|------|--------|
+| Pixel-level flux heatmap (GeoTIFF → PNG via PHP; `ImageMapType` overlay) | 4h |
+| Heatmap legend; mobile heatmap toggle | 1h |
+| **Add-on Total** | **5h** |
 
 ---
 
@@ -246,16 +254,27 @@ https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=L
 
 ## Estimated Budget
 
+**Phase 5 Core:**
+
 | Component | Hours | Rate | Cost |
 |-----------|-------|------|------|
 | SolarApiManager + settings | 3h | $100/h | $300 |
 | Segment color overlay + toggle | 3h | $100/h | $300 |
 | Segment tooltip | 2h | $100/h | $200 |
-| Per-segment energy calculation | 4h | $100/h | $400 |
-| Roof analysis summary panel | 3h | $100/h | $300 |
-| Pixel-level flux heatmap | 5h | $100/h | $500 |
+| Per-segment energy calculation | 3h | $100/h | $300 |
+| Roof analysis summary panel | 2h | $100/h | $200 |
 | Testing, polish, docs | 3h | $100/h | $300 |
-| **Total** | **23h** | — | **$2,300** |
+| **Core Total** | **16h** | — | **$1,600** |
+
+**Phase 5 Add-on — Pixel Heatmap (optional):**
+
+| Component | Hours | Rate | Cost |
+|-----------|-------|------|------|
+| GeoTIFF → PNG conversion (PHP) + ImageMapType overlay | 4h | $100/h | $400 |
+| Heatmap legend + mobile toggle | 1h | $100/h | $100 |
+| **Add-on Total** | **5h** | — | **$500** |
+
+**Full Phase 5 (Core + Add-on): $2,100**
 
 ---
 
