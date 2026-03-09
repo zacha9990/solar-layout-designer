@@ -76,7 +76,7 @@ Everything below is complete and working in this version.
 
 ```
 [solar_designer]
-[solar_designer width="900" height="600" zoom="20" lat="40.4168" lng="-3.7038"]
+[solar_designer width="900" height="600" zoom="21" lat="40.4168" lng="-3.7038"]
 ```
 
 | Attribute | Default | Description |

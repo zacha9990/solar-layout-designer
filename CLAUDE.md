@@ -113,7 +113,7 @@ This works correctly regardless of rotation because `panel.x/y` are the logical 
 
 ```
 [solar_designer]
-[solar_designer width="900" height="600" zoom="20" lat="40.4168" lng="-3.7038"]
+[solar_designer width="900" height="600" zoom="21" lat="40.4168" lng="-3.7038"]
 ```
 
 ---
