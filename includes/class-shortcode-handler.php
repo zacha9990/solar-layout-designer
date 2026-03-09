@@ -145,6 +145,71 @@ class SLD_Shortcode_Handler {
             </div>
             <?php endif; ?>
 
+            <!-- Mobile Floating Panel (hidden on desktop via CSS) -->
+            <div class="sld-mobile-float" id="sld-mobile-float">
+
+                <!-- Stats row -->
+                <div class="sld-mf-stats">
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Panels</span>
+                        <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">kWh/yr</span>
+                        <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat sld-mf-highlight">
+                        <span class="sld-mf-label">€/yr</span>
+                        <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Rate</span>
+                        <input type="number" id="sld-rate-input-mob"
+                               value="<?php echo esc_attr($atts['rate']); ?>"
+                               min="0" step="0.01" class="sld-mf-rate">
+                    </div>
+                </div>
+
+                <!-- Actions + D-pad row -->
+                <div class="sld-mf-body">
+
+                    <div class="sld-mf-btns">
+                        <div class="sld-mf-btn-row">
+                            <button id="sld-add-panel-mob" class="sld-btn sld-btn-primary" title="Add Panel" aria-label="Add Panel">
+                                <span class="sld-btn-icon" aria-hidden="true">☀</span>
+                            </button>
+                            <button id="sld-duplicate-mob" class="sld-btn sld-btn-secondary" disabled title="Duplicate selected panel" aria-label="Duplicate">
+                                <span class="sld-btn-icon" aria-hidden="true">⬚</span>
+                            </button>
+                            <button id="sld-reset-mob" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
+                                <span class="sld-btn-icon" aria-hidden="true">↻</span>
+                            </button>
+                        </div>
+                        <?php if ($has_maps): ?>
+                        <div class="sld-mf-btn-row">
+                            <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
+                            <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
+                                <span class="sld-btn-icon" aria-hidden="true">🔍</span>
+                            </button>
+                            <label class="sld-mf-toggle" title="Satellite view">
+                                <input type="checkbox" id="sld-toggle-map-mob" checked>
+                                🛰
+                            </label>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Directional pad — active only when a panel is selected -->
+                    <div class="sld-dpad" id="sld-dpad" aria-label="Move selected panel">
+                        <button class="sld-dpad-btn" data-dir="up"    aria-label="Move up">↑</button>
+                        <button class="sld-dpad-btn" data-dir="left"  aria-label="Move left">←</button>
+                        <button class="sld-dpad-btn" data-dir="right" aria-label="Move right">→</button>
+                        <button class="sld-dpad-btn" data-dir="down"  aria-label="Move down">↓</button>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
         <?php

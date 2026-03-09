@@ -76,15 +76,20 @@ class UIManager {
      * Update statistics display
      */
     updateStats(stats) {
-        const countEl = document.getElementById('sld-panel-count');
-        const annualEl = document.getElementById('sld-annual-kwh');
-        const monthlyEl = document.getElementById('sld-monthly-kwh');
-        const savingsEl = document.getElementById('sld-annual-savings');
+        const set = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
 
-        if (countEl) countEl.textContent    = stats.panelCount;
-        if (annualEl) annualEl.textContent     = EnergyCalculator.formatNumber(stats.annualEnergy);
-        if (monthlyEl) monthlyEl.textContent    = EnergyCalculator.formatNumber(stats.monthlyAverage);
-        if (savingsEl) savingsEl.textContent = EnergyCalculator.formatNumber(stats.annualSavings);
+        set('sld-panel-count',       stats.panelCount);
+        set('sld-annual-kwh',        EnergyCalculator.formatNumber(stats.annualEnergy));
+        set('sld-monthly-kwh',       EnergyCalculator.formatNumber(stats.monthlyAverage));
+        set('sld-annual-savings',    EnergyCalculator.formatNumber(stats.annualSavings));
+
+        // Mirror values in mobile floating panel
+        set('sld-panel-count-mob',   stats.panelCount);
+        set('sld-annual-kwh-mob',    EnergyCalculator.formatNumber(stats.annualEnergy));
+        set('sld-annual-savings-mob', EnergyCalculator.formatNumber(stats.annualSavings));
     }
 
 }
