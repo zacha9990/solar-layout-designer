@@ -143,14 +143,90 @@ Setelah tahap ini selesai:
 
 ---
 
+# 🟣 TAHAP 4 – UI Redesign + Mobile Floating Panel
+
+**Total: Included in Phase 3 scope**
+
+## 🎯 Objective
+
+Setelah tahap ini selesai:
+
+- UI tampil modern, bersih, dan konsisten (design tokens, card-based stats).
+- Di mobile, semua kontrol (Add Panel, Duplicate, Reset, search, toggle peta, statistik) ada di floating panel yang melekat di bawah layar.
+- D-pad muncul saat panel dipilih — user bisa geser panel pakai jempol tanpa kesulitan drag.
+- Peta lebih besar di mobile (82% tinggi viewport).
+
+---
+
+## 🔧 Lingkup Pengerjaan
+
+- CSS redesign: design tokens, card stats, ghost buttons, toggle switch
+- Responsive breakpoint 1024px / 768px / 480px
+- Floating panel `position: fixed; bottom: 0` di mobile
+- D-pad (directional pad) 4 arah dengan hold-to-repeat 80ms
+- Mirror stats ke floating panel
+- JS-controlled map height (window.innerHeight × 0.82) bypass CSS conflict
+
+---
+
+# 🔵 TAHAP 5 – Google Solar API: Radiasi Atap & Orientasi
+
+**Total: $2,300**
+
+## 🎯 Objective
+
+Setelah tahap ini selesai:
+
+- User bisa melihat **overlay warna di peta** yang menunjukkan bagian atap mana yang mendapat sinar matahari paling banyak sebelum menaruh panel (hijau = optimal, oranye = hindari).
+- Kalkulasi kWh per panel menjadi **akurat berdasarkan orientasi atap** — atap menghadap selatan menghasilkan lebih banyak listrik daripada yang menghadap utara.
+- Google Solar API mendeteksi segmen atap secara otomatis dari data satelit.
+- Tabel analisis atap menampilkan ringkasan per segmen (arah, sudut, luas, kWh/tahun).
+
+Referensi teknis lengkap: lihat `PHASE5_PLAN.md`
+
+---
+
+## 🔧 Lingkup Pengerjaan
+
+- Integrasi endpoint `buildingInsights` Google Solar API
+- Overlay warna per segmen atap di atas Google Maps (polygon semi-transparan)
+- Pixel-level flux heatmap dari endpoint `dataLayers` (opsional, detail lebih tinggi)
+- Tooltip saat klik segmen: arah hadap, kemiringan, luas, estimasi kWh/tahun
+- Kalkulasi energi berbasis segmen (gantikan nilai flat 400 kWh/panel)
+- Fallback: Solar API → PVGIS → nilai admin
+- Tabel analisis atap (desktop collapsible, mobile card row)
+- Setting baru: `sld_google_solar_api_key`
+
+---
+
+## 💳 Struktur Pembayaran Tahap 5 ($2,300)
+
+- **20% ($460)** → Mulai pengerjaan (SolarApiManager + settings + fetch data)
+- **40% ($920)** → Overlay segmen warna + tooltip + kalkulasi berbasis segmen sudah bisa diuji
+- **40% ($920)** → Heatmap pixel-level + tabel analisis atap + testing selesai dan disetujui
+
+---
+
+# 💡 TAHAP 6 (PROPOSAL) – Design Persistence & Export
+
+**Estimasi: $2,700**
+
+Simpan & muat desain panel, ekspor PDF profesional, ekspor CSV.
+Referensi lengkap: lihat `PHASE6_PROPOSAL.md`
+
+---
+
 # Ringkasan Total
 
-| Tahap | Biaya |
-| --- | --- |
-| Tahap 1 | $800 |
-| Tahap 2 | $450 |
-| Tahap 3 | $350 |
-| **Total** | **$1,600** |
+| Tahap | Biaya | Status |
+| --- | --- | --- |
+| Tahap 1 | $800 | ✅ Selesai |
+| Tahap 2 | $450 | ✅ Selesai |
+| Tahap 3 | $350 | ✅ Selesai |
+| Tahap 4 | — | ✅ Selesai |
+| Tahap 5 | $2,300 | 🔜 Berikutnya |
+| Tahap 6 | $2,700 | 💡 Proposal |
+| **Total (1–3)** | **$1,600** | |
 
 ---
 

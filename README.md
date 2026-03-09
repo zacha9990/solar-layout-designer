@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.5.5 | **Phase:** 4 complete + mobile fixes + UX patches | **License:** GPL2
+**Version:** 1.6.5 | **Phase:** 4 complete + mobile floating UI | **License:** GPL2
 
 ---
 
@@ -10,12 +10,15 @@ Interactive solar panel layout designer for WordPress. Place panels over a Googl
 
 This plugin is developed in three phases. Each phase is reviewed and approved by the client before the next begins.
 
-| Phase | Scope | Value |
-|-------|-------|-------|
-| Phase 1 | Core panel system + energy calculator + Google Maps | $800 |
-| Phase 2 | Panel rotation, duplication, and selection system | $450 |
-| **Phase 3** *(complete)* | Performance optimisation, mobile polish, production hardening | $350 |
-| **Total** | | **$1,600** |
+| Phase | Scope | Status | Value |
+|-------|-------|--------|-------|
+| Phase 1 | Core panel system + energy calculator + Google Maps | ✅ Complete | $800 |
+| Phase 2 | Panel rotation, duplication, and selection system | ✅ Complete | $450 |
+| Phase 3 | Performance optimisation, mobile polish, production hardening | ✅ Complete | $350 |
+| Phase 4 | UI redesign + mobile floating panel with D-pad | ✅ Complete | — |
+| **Phase 5** | Google Solar API — roof orientation & irradiance overlay | 🔜 Next | $2,300 |
+| Phase 6 | Design persistence + PDF/CSV export | 💡 Proposed | $2,700 |
+| **Total (Ph 1–3)** | | | **$1,600** |
 
 ---
 
@@ -148,7 +151,26 @@ Go to **Settings → Solar Designer** to configure:
 
 See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
 
+## Known Limitations (Updated)
+
+| Limitation | Status |
+|------------|--------|
+| Energy calculation uses flat kWh/panel (not orientation-aware) | Phase 5 — Google Solar API |
+| No visual radiation overlay on roof | Phase 5 — Google Solar API |
+| Layouts not saved — lost on page refresh | Phase 6 — Design Persistence |
+| No image/PDF export | Phase 6 — PDF Export |
+| PVGIS API outages | Handled gracefully with admin-configured fallback |
+
+---
+
 ## Changelog
+
+**v1.6.5 — March 9, 2026**
+- 📱 Mobile floating panel (position: fixed, bottom of viewport) containing all controls: Add Panel, Duplicate, Reset, address search, satellite toggle, stats
+- 📱 D-pad for moving selected panel (3px per tap, 80ms hold-to-repeat interval)
+- 📱 Map height set to 82% of viewport height via JS on mobile — overrides CSS constraints
+- 📱 Stats mirrored to floating panel (panels, kWh/year, €/year)
+- 🐛 Fix CSS cascade: `display:none` for floating panel was placed after media query (later rule won), moved before media query block
 
 **v1.5.5 — March 9, 2026**
 - 🔍 Default map zoom raised from 20 → 21 so panels are proportionally correct relative to rooftop on first load
