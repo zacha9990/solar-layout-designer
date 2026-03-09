@@ -25,7 +25,7 @@ class SolarDesigner {
 
                 const lat  = parseFloat(containerData.lat)  || 40.4168;
                 const lng  = parseFloat(containerData.lng)  || -3.7038;
-                const zoom = parseInt(containerData.zoom)   || 20;
+                const zoom = parseInt(containerData.zoom)   || 21;
 
                 this.mapManager.initMap(lat, lng, zoom);
                 this.mapManager.onLocationChange = (newLat, newLng) => this._onLocationReady(newLat, newLng);
@@ -104,7 +104,7 @@ class SolarDesigner {
      * Max size prevents panels from becoming enormous when zoomed in very close.
      */
     _updatePanelSize() {
-        const MIN_W = 40, MIN_H = 64;
+        const MIN_W = 25, MIN_H = 40;
         const MAX_W = 150, MAX_H = 240;
 
         let widthPx, heightPx;

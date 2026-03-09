@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.5.4 | **Phase:** 4 complete + mobile fixes + UX patches | **License:** GPL2
+**Version:** 1.5.5 | **Phase:** 4 complete + mobile fixes + UX patches | **License:** GPL2
 
 ---
 
@@ -83,7 +83,7 @@ Everything below is complete and working in this version.
 |-----------|---------|-------------|
 | `width` | `800` | Designer width (px) |
 | `height` | `600` | Designer height (px) |
-| `zoom` | `20` | Initial map zoom (18–21 for rooftops) |
+| `zoom` | `21` | Initial map zoom (18–22 for rooftops) |
 | `lat` | `40.4168` | Initial latitude (default: Madrid, Spain) |
 | `lng` | `-3.7038` | Initial longitude (default: Madrid, Spain) |
 | `rate` | from settings | Electricity rate (EUR/kWh) |
@@ -149,6 +149,12 @@ Go to **Settings → Solar Designer** to configure:
 See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical architecture, JS module reference, design decisions, and testing checklist.
 
 ## Changelog
+
+**v1.5.5 — March 9, 2026**
+- 🔍 Default map zoom raised from 20 → 21 so panels are proportionally correct relative to rooftop on first load
+- 🔍 Min panel size tuned to 25×40 px (was 40×64) — visible but no longer oversized at default zoom
+- At zoom 21, a 1m panel renders at ~25px against a 176px/10m rooftop (~14% ratio, close to real-world 10%)
+- At zoom 22+, panels render at true physical scale with no clamping needed
 
 **v1.5.4 — March 9, 2026**
 - 🔍 Increased minimum panel pixel size from 15×24 → 40×64 px for better visibility at all zoom levels
