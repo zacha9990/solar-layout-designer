@@ -17,7 +17,7 @@ class MapManager {
     /**
      * Initialize Google Map with satellite view
      */
-    initMap(lat, lng, zoom = 20) {
+    initMap(lat, lng, zoom = 22) {
         if (!this.mapElement || typeof google === 'undefined') {
             console.warn('Google Maps not available');
             return false;
@@ -45,7 +45,8 @@ class MapManager {
                 position: google.maps.ControlPosition.RIGHT_CENTER
             },
             gestureHandling: 'greedy',
-            tilt: 0 // Disable tilt for better rooftop view
+            tilt: 0,       // Disable tilt for better rooftop view
+            maxZoom: 22    // Allow maximum zoom where satellite imagery supports it
         });
         
         this.currentLocation = center;
@@ -85,7 +86,7 @@ class MapManager {
             this.moveToLocation(
                 place.geometry.location.lat(),
                 place.geometry.location.lng(),
-                20
+                21
             );
             
             // Update location display
@@ -127,7 +128,7 @@ class MapManager {
                 this.moveToLocation(
                     location.lat(),
                     location.lng(),
-                    20
+                    21
                 );
                 this.updateLocationDisplay(results[0].formatted_address);
             } else {

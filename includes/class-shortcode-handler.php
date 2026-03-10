@@ -19,7 +19,7 @@ class SLD_Shortcode_Handler {
             'rate'   => get_option('sld_default_rate', 0.25),
             'lat'    => '',   // Default latitude (optional, falls back to Madrid in JS)
             'lng'    => '',   // Default longitude (optional, falls back to Madrid in JS)
-            'zoom'   => '21' // Default zoom level for satellite view
+            'zoom'   => '22' // Default zoom level for satellite view (max for rooftop detail)
         ), $atts);
 
         $map_enabled = get_option('sld_enable_map_background', 'yes') === 'yes';
