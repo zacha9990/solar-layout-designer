@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.6.5 | **Phase:** 4 complete + mobile floating UI | **License:** GPL2
+**Version:** 1.6.7 | **Phase:** 4 complete + mobile floating UI | **License:** GPL2
 
 ---
 
@@ -164,6 +164,14 @@ See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical ar
 ---
 
 ## Changelog
+
+**v1.6.7 — March 10, 2026**
+- 📱 Mobile UI restructure: stats (Panels, kWh/yr, €/yr, Rate) + address search moved to a new top bar above the map (`sld-mobile-topbar`)
+- 📱 Bottom floating panel now contains only action buttons (+, Duplicate, Reset) + D-pad — simpler, easier thumb reach
+- 🔄 Add Panel button changed to `+` icon on all screen sizes (desktop + mobile); text label removed
+
+**v1.6.6 — March 10, 2026**
+- 🐛 Fix panel size mismatch on mobile HiDPI: `getMetersPerPixel()` now uses bounds-based calculation (`getBounds()` + `offsetWidth`) instead of the classic 256px-tile formula — panels now match real-world scale on all devices including Retina/HiDPI screens
 
 **v1.6.5 — March 9, 2026**
 - 📱 Mobile floating panel (position: fixed, bottom of viewport) containing all controls: Add Panel, Duplicate, Reset, address search, satellite toggle, stats

@@ -221,11 +221,29 @@ class MapManager {
     }
     
     /**
-     * Calculate meters per pixel at the current map center and zoom.
-     * Formula: (156543.03392 × cos(lat × π/180)) / 2^zoom
+     * Calculate meters per CSS pixel using the actual rendered map bounds.
+     * This is accurate on all devices including mobile HiDPI (where the classic
+     * 256px-tile formula underestimates scale and makes panels appear too small).
+     * Falls back to the classic formula if bounds are not yet available.
      */
     getMetersPerPixel() {
         if (!this.map) return null;
+
+        const bounds = this.map.getBounds();
+        if (bounds && this.mapElement) {
+            const ne = bounds.getNorthEast();
+            const sw = bounds.getSouthWest();
+            const lngSpan = Math.abs(ne.lng() - sw.lng());
+            const lat = this.map.getCenter().lat();
+            const metersPerDegreeLng = 111320 * Math.cos(lat * Math.PI / 180);
+            const mapWidthMeters = lngSpan * metersPerDegreeLng;
+            const containerWidth = this.mapElement.offsetWidth;
+            if (containerWidth > 0 && mapWidthMeters > 0) {
+                return mapWidthMeters / containerWidth;
+            }
+        }
+
+        // Fallback: classic 256px-tile formula
         const lat  = this.map.getCenter().lat();
         const zoom = this.map.getZoom();
         return (156543.03392 * Math.cos(lat * Math.PI / 180)) / Math.pow(2, zoom);

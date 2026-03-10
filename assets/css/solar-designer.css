@@ -500,6 +500,11 @@
     display: none;
 }
 
+/* Mobile Top Bar — stats + address search, hidden on desktop */
+.sld-mobile-topbar {
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .sld-controls {
@@ -554,6 +559,16 @@
         margin: 0;
         border-radius: 0;
         border: none;
+    }
+
+    /* ── Mobile Top Bar — pinned above the map ── */
+    .sld-mobile-topbar {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 14px;
+        background: var(--sld-surface);
+        border-bottom: 1px solid var(--sld-border);
     }
 
     /* ── Mobile Floating Panel — pinned to bottom of viewport ── */
@@ -645,15 +660,17 @@
         align-items: center;
     }
 
-    /* Icon-only buttons in floating panel */
-    .sld-mobile-float .sld-btn {
+    /* Icon-only buttons in floating panel and top bar */
+    .sld-mobile-float .sld-btn,
+    .sld-mobile-topbar .sld-btn {
         width: 44px;
         height: 44px;
         padding: 0;
         flex-shrink: 0;
     }
 
-    .sld-mobile-float .sld-btn-icon {
+    .sld-mobile-float .sld-btn-icon,
+    .sld-mobile-topbar .sld-btn-icon {
         font-size: 18px;
     }
 

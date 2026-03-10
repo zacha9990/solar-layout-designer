@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.6.5 | **Phase:** 1–4 complete + mobile floating UI | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
+**Current Version:** 1.6.7 | **Phase:** 1–4 complete + mobile floating UI | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
 
 ---
 
@@ -42,10 +42,21 @@ There is no `<canvas>` element. Canvas was abandoned because Google Maps interna
 
 ### 3. Real-World Panel Sizing
 Panel dimensions are stored in **centimetres** (default: 100 cm × 160 cm).
-`_updatePanelSize()` in `solar-designer.js` converts cm → pixels at runtime:
+`_updatePanelSize()` in `solar-designer.js` converts cm → pixels at runtime using `getMetersPerPixel()` from `MapManager`.
 
+**Primary (bounds-based — device-agnostic):**
+```
+metersPerPixel = mapWidthMeters / containerCssPx
+              = (lngSpan × 111320 × cos(lat × π/180)) / mapElement.offsetWidth
+```
+Retrieved from `map.getBounds()` + `mapElement.offsetWidth`. Correct on all devices including mobile HiDPI where the classic tile formula underestimates scale.
+
+**Fallback (classic 256px-tile formula, used only when `getBounds()` not yet available):**
 ```
 metersPerPixel = (156543.03392 × cos(lat × π/180)) / 2^zoom
+```
+
+```
 pixelSize = (cm / 100) / metersPerPixel
 ```
 
@@ -82,6 +93,16 @@ dragOffset = {
 }
 ```
 This works correctly regardless of rotation because `panel.x/y` are the logical positions in the panel area's coordinate system.
+
+### 9. Mobile Layout Structure (≤768px)
+
+Two dedicated mobile-only containers replace the desktop toolbar/stats:
+
+- **`div.sld-mobile-topbar`** — static element rendered **above** `.sld-canvas-wrapper`; contains the stats row (Panels, kWh/yr, €/yr, Rate) + address search row. Hidden on desktop (`display: none`), shown as `flex` column on `≤768px`.
+- **`div.sld-mobile-float`** — `position: fixed; bottom: 0`; contains only action buttons (`+`, `⬚`, `↻`) + D-pad.
+
+The desktop `.sld-controls` and `.sld-stats` are hidden on mobile (`display: none !important`).
+Mobile-specific element IDs use a `-mob` suffix (e.g. `sld-panel-count-mob`, `sld-rate-input-mob`).
 
 ---
 

@@ -3,7 +3,7 @@ Contributors: yourusername
 Tags: solar, energy, calculator, interactive, layout, google maps
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 1.2.0
+Stable tag: 1.6.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,14 @@ The plugin uses EUR (€) by default. The electricity rate field accepts any dec
 4. Mobile view with responsive controls
 
 == Changelog ==
+
+= 1.6.7 =
+* Mobile UI restructure: stats + address search moved to a new top bar above the map
+* Bottom floating panel now contains only action buttons and D-pad
+* Add Panel button changed to + icon on all screen sizes
+
+= 1.6.6 =
+* Fix panel size mismatch on mobile HiDPI devices — bounds-based meters-per-pixel calculation replaces classic tile formula
 
 = 1.2.0 =
 * Location-aware energy calculations via PVGIS API (EU JRC) — no API key required

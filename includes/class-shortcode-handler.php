@@ -43,8 +43,7 @@ class SLD_Shortcode_Handler {
                 <div class="sld-controls-left">
                     <div class="sld-btn-group">
                         <button id="sld-add-panel" class="sld-btn sld-btn-primary" title="Add a new solar panel" aria-label="Add Panel">
-                            <span class="sld-btn-icon" aria-hidden="true">☀</span>
-                            <span class="sld-btn-label">Add Panel</span>
+                            <span class="sld-btn-icon" aria-hidden="true">+</span>
                         </button>
                         <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
                             <span class="sld-btn-icon" aria-hidden="true">↻</span>
@@ -84,6 +83,42 @@ class SLD_Shortcode_Handler {
                             Configure Google Maps API
                         </a> to enable satellite view background
                     </p>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Mobile Top Bar (stats + address search — mobile only) -->
+            <div class="sld-mobile-topbar">
+                <div class="sld-mf-stats">
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Panels</span>
+                        <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">kWh/yr</span>
+                        <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat sld-mf-highlight">
+                        <span class="sld-mf-label">€/yr</span>
+                        <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Rate</span>
+                        <input type="number" id="sld-rate-input-mob"
+                               value="<?php echo esc_attr($atts['rate']); ?>"
+                               min="0" step="0.01" class="sld-mf-rate">
+                    </div>
+                </div>
+                <?php if ($has_maps): ?>
+                <div class="sld-mf-btn-row">
+                    <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
+                    <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
+                        <span class="sld-btn-icon" aria-hidden="true">🔍</span>
+                    </button>
+                    <label class="sld-mf-toggle" title="Satellite view">
+                        <input type="checkbox" id="sld-toggle-map-mob" checked>
+                        🛰
+                    </label>
                 </div>
                 <?php endif; ?>
             </div>
@@ -148,35 +183,13 @@ class SLD_Shortcode_Handler {
             <!-- Mobile Floating Panel (hidden on desktop via CSS) -->
             <div class="sld-mobile-float" id="sld-mobile-float">
 
-                <!-- Stats row -->
-                <div class="sld-mf-stats">
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">Panels</span>
-                        <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
-                    </div>
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">kWh/yr</span>
-                        <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
-                    </div>
-                    <div class="sld-mf-stat sld-mf-highlight">
-                        <span class="sld-mf-label">€/yr</span>
-                        <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
-                    </div>
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">Rate</span>
-                        <input type="number" id="sld-rate-input-mob"
-                               value="<?php echo esc_attr($atts['rate']); ?>"
-                               min="0" step="0.01" class="sld-mf-rate">
-                    </div>
-                </div>
-
                 <!-- Actions + D-pad row -->
                 <div class="sld-mf-body">
 
                     <div class="sld-mf-btns">
                         <div class="sld-mf-btn-row">
                             <button id="sld-add-panel-mob" class="sld-btn sld-btn-primary" title="Add Panel" aria-label="Add Panel">
-                                <span class="sld-btn-icon" aria-hidden="true">☀</span>
+                                <span class="sld-btn-icon" aria-hidden="true">+</span>
                             </button>
                             <button id="sld-duplicate-mob" class="sld-btn sld-btn-secondary" disabled title="Duplicate selected panel" aria-label="Duplicate">
                                 <span class="sld-btn-icon" aria-hidden="true">⬚</span>
@@ -185,18 +198,6 @@ class SLD_Shortcode_Handler {
                                 <span class="sld-btn-icon" aria-hidden="true">↻</span>
                             </button>
                         </div>
-                        <?php if ($has_maps): ?>
-                        <div class="sld-mf-btn-row">
-                            <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
-                            <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
-                                <span class="sld-btn-icon" aria-hidden="true">🔍</span>
-                            </button>
-                            <label class="sld-mf-toggle" title="Satellite view">
-                                <input type="checkbox" id="sld-toggle-map-mob" checked>
-                                🛰
-                            </label>
-                        </div>
-                        <?php endif; ?>
                     </div>
 
                     <!-- Directional pad — active only when a panel is selected -->
