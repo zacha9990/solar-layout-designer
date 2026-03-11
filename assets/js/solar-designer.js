@@ -30,7 +30,7 @@ class SolarDesigner {
 
                 const lat  = parseFloat(containerData.lat)  || 40.4168;
                 const lng  = parseFloat(containerData.lng)  || -3.7038;
-                const zoom = parseInt(containerData.zoom)   || 21;
+                const zoom = parseInt(containerData.zoom)   || 22;
 
                 this.mapManager.initMap(lat, lng, zoom);
                 this.mapManager.onLocationChange = (newLat, newLng) => this._onLocationReady(newLat, newLng);
