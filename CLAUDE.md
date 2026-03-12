@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.8.0 | **Phase:** 1–4 complete + desktop & mobile UX polish | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
+**Current Version:** 1.8.6 | **Phase:** 1–4 complete + desktop & mobile UX polish | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
 
 ---
 
@@ -108,10 +108,16 @@ Two dedicated mobile-only containers replace the desktop toolbar/stats:
 
 **Toast notifications** (`#sld-toast`, `.sld-toast`) — pill notification at bottom center, shown briefly after add/delete via `_showToast()`.
 
-**`rotateSelectedPanel(deg)`** — rotates selected panel by ±`deg` degrees; used by mobile rotate buttons (±15° per tap).
+**`rotateSelectedPanel(deg)`** — rotates selected panel by ±`deg` degrees; used by mobile rotate buttons (±5° per tap).
 
 The desktop `.sld-controls` and `.sld-stats` are hidden on mobile (`display: none !important`).
 Mobile-specific element IDs use a `-mob` suffix (e.g. `sld-panel-count-mob`, `sld-rate-input-mob`).
+
+### iOS WebKit Quirks (apply to all browsers on iPhone/iPad)
+All browsers on iOS are forced to use WebKit engine (Apple App Store policy), so these apply universally:
+
+- **Double-tap zoom on buttons** — fixed via `touch-action: manipulation` on `.sld-mobile-float .sld-btn` and `.sld-dpad-btn`. Tells WebKit the element is an interactive control; disables double-tap zoom without affecting accessibility.
+- **Auto-zoom on input focus** — WebKit zooms in when a focused `<input>` has `font-size < 16px`. Fixed by setting `.sld-mf-search { font-size: 16px }`. Never set mobile search input below 16px.
 
 ---
 

@@ -400,11 +400,11 @@ class SolarDesigner {
             if (this.selectedPanelId !== null) this.deletePanel(this.selectedPanelId);
         });
 
-        // Rotate buttons (±15° per tap)
+        // Rotate buttons (±5° per tap)
         const rotateCW  = document.getElementById('sld-rotate-cw-mob');
         const rotateCCW = document.getElementById('sld-rotate-ccw-mob');
-        if (rotateCW)  rotateCW.addEventListener('click',  () => this.rotateSelectedPanel(15));
-        if (rotateCCW) rotateCCW.addEventListener('click', () => this.rotateSelectedPanel(-15));
+        if (rotateCW)  rotateCW.addEventListener('click',  () => this.rotateSelectedPanel(5));
+        if (rotateCCW) rotateCCW.addEventListener('click', () => this.rotateSelectedPanel(-5));
 
         // D-pad — tap to move 8px, hold for continuous movement
         const dpadBtns = document.querySelectorAll('.sld-dpad-btn');

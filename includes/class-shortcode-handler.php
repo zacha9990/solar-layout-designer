@@ -47,7 +47,7 @@ class SLD_Shortcode_Handler {
                             <span class="sld-btn-label">Add Panel</span>
                         </button>
                         <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first" aria-label="Duplicate">
-                            <span class="sld-btn-icon" aria-hidden="true">⬚</span>
+                            <span class="sld-btn-icon" aria-hidden="true">&#x29C9;</span>
                             <span class="sld-btn-label">Duplicate</span>
                         </button>
                         <button id="sld-delete" class="sld-btn sld-btn-secondary" disabled title="Delete selected panel" aria-label="Delete panel">
@@ -199,9 +199,9 @@ class SLD_Shortcode_Handler {
                                 <span class="sld-btn-icon" aria-hidden="true">+</span>
                             </button>
                             <button id="sld-duplicate-mob" class="sld-btn sld-btn-secondary" disabled title="Duplicate selected panel" aria-label="Duplicate">
-                                <span class="sld-btn-icon" aria-hidden="true">⬚</span>
+                                <span class="sld-btn-icon" aria-hidden="true">&#x29C9;</span>
                             </button>
-                            <button id="sld-reset-mob" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
+                            <button id="sld-reset-mob" class="sld-btn sld-btn-danger" title="Remove all panels" aria-label="Reset All">
                                 <span class="sld-btn-icon" aria-hidden="true">↻</span>
                             </button>
                         </div>

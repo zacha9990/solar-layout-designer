@@ -619,7 +619,7 @@
     }
 
     .sld-mf-label {
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -628,7 +628,7 @@
     }
 
     .sld-mf-val {
-        font-size: 20px;
+        font-size: 24px;
         font-weight: 700;
         color: var(--sld-text);
         line-height: 1.2;
@@ -684,6 +684,7 @@
         height: 44px;
         padding: 0;
         flex-shrink: 0;
+        touch-action: manipulation; /* prevent double-tap zoom */
     }
 
     .sld-mobile-float .sld-btn-icon,
@@ -696,7 +697,7 @@
         padding: 8px 10px;
         border: 1.5px solid var(--sld-border);
         border-radius: var(--sld-radius-sm);
-        font-size: 13px;
+        font-size: 16px; /* must be ≥16px to prevent iOS auto-zoom on focus */
         background: var(--sld-surface);
         color: var(--sld-text);
         min-width: 0;
@@ -835,7 +836,7 @@
 @media (max-width: 480px) {
     /* Even smaller screens: tighten floating panel */
     .sld-mf-val {
-        font-size: 16px;
+        font-size: 18px;
     }
 
     .sld-mf-rate {
