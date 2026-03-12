@@ -256,6 +256,7 @@ class SolarDesigner {
                 !e.target.closest('.sld-input') &&
                 !e.target.closest('.sld-mobile-float') &&
                 !e.target.closest('.sld-mobile-topbar') &&
+                !e.target.closest('.sld-mobile-address-bar') &&
                 !e.target.closest('.sld-dpad')) {
                 this._setSelected(null);
             }
@@ -404,26 +405,6 @@ class SolarDesigner {
         const rotateCCW = document.getElementById('sld-rotate-ccw-mob');
         if (rotateCW)  rotateCW.addEventListener('click',  () => this.rotateSelectedPanel(15));
         if (rotateCCW) rotateCCW.addEventListener('click', () => this.rotateSelectedPanel(-15));
-
-        // Topbar collapse toggle
-        const topbarToggle = document.getElementById('sld-topbar-toggle');
-        const topbarBody   = document.getElementById('sld-mt-body');
-        if (topbarToggle && topbarBody) {
-            topbarToggle.addEventListener('click', () => {
-                const isExpanded = topbarToggle.classList.contains('sld-mt-expanded');
-                if (isExpanded) {
-                    topbarToggle.classList.remove('sld-mt-expanded');
-                    topbarToggle.textContent = '\u25B6';
-                    topbarToggle.setAttribute('aria-label', 'Expand details');
-                    topbarBody.classList.add('sld-mt-collapsed');
-                } else {
-                    topbarToggle.classList.add('sld-mt-expanded');
-                    topbarToggle.textContent = '\u25BC';
-                    topbarToggle.setAttribute('aria-label', 'Collapse details');
-                    topbarBody.classList.remove('sld-mt-collapsed');
-                }
-            });
-        }
 
         // D-pad — tap to move 8px, hold for continuous movement
         const dpadBtns = document.querySelectorAll('.sld-dpad-btn');

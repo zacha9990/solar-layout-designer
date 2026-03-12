@@ -92,47 +92,44 @@ class SLD_Shortcode_Handler {
                 <?php endif; ?>
             </div>
 
-            <!-- Mobile Top Bar (stats + address search — mobile only) -->
-            <div class="sld-mobile-topbar" id="sld-mobile-topbar">
-                <!-- Stats row — always visible, with collapse toggle -->
-                <div class="sld-mt-header">
-                    <div class="sld-mf-stats">
-                        <div class="sld-mf-stat">
-                            <span class="sld-mf-label">Panels</span>
-                            <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
-                        </div>
-                        <div class="sld-mf-stat">
-                            <span class="sld-mf-label">kWh/yr</span>
-                            <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
-                        </div>
-                        <div class="sld-mf-stat sld-mf-highlight">
-                            <span class="sld-mf-label">€/yr</span>
-                            <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
-                        </div>
-                        <div class="sld-mf-stat">
-                            <span class="sld-mf-label">Rate</span>
-                            <input type="number" id="sld-rate-input-mob"
-                                   value="<?php echo esc_attr($atts['rate']); ?>"
-                                   min="0" step="0.01" class="sld-mf-rate">
-                        </div>
-                    </div>
-                    <button id="sld-topbar-toggle" class="sld-mt-toggle-btn sld-mt-expanded" aria-label="Collapse details" title="Toggle details">&#9660;</button>
+            <!-- Mobile Address Bar (scrolls with page — mobile only) -->
+            <div class="sld-mobile-address-bar" id="sld-mobile-address-bar">
+                <?php if ($has_maps): ?>
+                <div class="sld-mf-btn-row">
+                    <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
+                    <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
+                        <span class="sld-btn-icon" aria-hidden="true">🔍</span>
+                    </button>
+                    <label class="sld-mf-toggle" title="Satellite view">
+                        <input type="checkbox" id="sld-toggle-map-mob" checked>
+                        🛰
+                    </label>
                 </div>
-                <!-- Collapsible body: search + usage hint -->
-                <div class="sld-mt-body" id="sld-mt-body">
-                    <?php if ($has_maps): ?>
-                    <div class="sld-mf-btn-row">
-                        <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
-                        <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
-                            <span class="sld-btn-icon" aria-hidden="true">🔍</span>
-                        </button>
-                        <label class="sld-mf-toggle" title="Satellite view">
-                            <input type="checkbox" id="sld-toggle-map-mob" checked>
-                            🛰
-                        </label>
+                <?php endif; ?>
+                <p class="sld-mt-hint">Tap to select &middot; Drag to move &middot; Double-tap to delete</p>
+            </div>
+
+            <!-- Mobile Top Bar (sticky — stats only) -->
+            <div class="sld-mobile-topbar" id="sld-mobile-topbar">
+                <div class="sld-mf-stats">
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Panels</span>
+                        <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
                     </div>
-                    <?php endif; ?>
-                    <p class="sld-mt-hint">Tap to select &middot; Drag to move &middot; Double-tap to delete</p>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">kWh/yr</span>
+                        <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat sld-mf-highlight">
+                        <span class="sld-mf-label">€/yr</span>
+                        <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
+                    </div>
+                    <div class="sld-mf-stat">
+                        <span class="sld-mf-label">Rate</span>
+                        <input type="number" id="sld-rate-input-mob"
+                               value="<?php echo esc_attr($atts['rate']); ?>"
+                               min="0" step="0.01" class="sld-mf-rate">
+                    </div>
                 </div>
             </div>
 
