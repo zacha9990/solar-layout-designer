@@ -100,10 +100,6 @@ class SLD_Shortcode_Handler {
                     <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
                         <span class="sld-btn-icon" aria-hidden="true">🔍</span>
                     </button>
-                    <label class="sld-mf-toggle" title="Satellite view">
-                        <input type="checkbox" id="sld-toggle-map-mob" checked>
-                        🛰
-                    </label>
                 </div>
                 <?php endif; ?>
                 <p class="sld-mt-hint">Tap to select &middot; Drag to move &middot; Double-tap to delete</p>

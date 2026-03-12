@@ -580,7 +580,7 @@
     .sld-mobile-topbar {
         display: flex;
         align-items: center;
-        padding: 8px 14px;
+        padding: 12px 16px;
         background: var(--sld-surface);
         border-bottom: 1px solid var(--sld-border);
         position: sticky;
@@ -628,7 +628,7 @@
     }
 
     .sld-mf-val {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 700;
         color: var(--sld-text);
         line-height: 1.2;
