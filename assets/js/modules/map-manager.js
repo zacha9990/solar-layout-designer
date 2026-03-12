@@ -203,6 +203,21 @@ class MapManager {
     }
     
     /**
+     * Reverse geocode coordinates to a human-readable address and update the display.
+     */
+    reverseGeocodeLocation(lat, lng) {
+        if (typeof google === 'undefined') return;
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                this.updateLocationDisplay(results[0].formatted_address);
+            } else {
+                this.updateLocationDisplay(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+            }
+        });
+    }
+
+    /**
      * Update location display text
      */
     updateLocationDisplay(address) {

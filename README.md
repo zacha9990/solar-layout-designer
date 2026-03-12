@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.7.0 | **Phase:** 4 complete + mobile UX polish | **License:** GPL2
+**Version:** 1.8.0 | **Phase:** 4 complete + desktop UX polish | **License:** GPL2
 
 ---
 
@@ -110,9 +110,12 @@ Go to **Settings → Solar Designer** to configure:
 | Action | How |
 |--------|-----|
 | Search for a rooftop | Type address in search box → Enter or click Search |
-| Add a panel | Click **+** (Add Panel) |
+| Add a panel | Click **+ Add Panel** |
 | Move a panel | Click and drag |
-| Delete a panel | Double-click, or click to select (red border) → Delete/Backspace key |
+| Select a panel | Single-click (red border appears) |
+| Delete a panel | Double-click, or select → **Delete/Backspace** key, or select → click **✕ Delete** in toolbar |
+| Rotate a panel | Select → drag the blue circle handle above the panel |
+| Duplicate a panel | Select → click **⬚ Duplicate** in toolbar |
 | Clear all panels | Click **↻ Reset All** → confirm |
 | Change electricity rate | Edit the rate field in the stats bar; savings update immediately |
 | Hide the map | Uncheck **Show Satellite View** |
@@ -169,6 +172,16 @@ See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical ar
 ---
 
 ## Changelog
+
+**v1.8.0 — March 12, 2026**
+- 🖥️ Add Panel button restored with text label on desktop (was icon-only `+`)
+- 🖥️ Desktop Delete button (`✕ Delete`) added to toolbar — enabled when a panel is selected
+- 🖥️ Hint text updated to mention Delete/Backspace keyboard shortcut
+- 🖥️ Rate input field narrowed (150px → 85px) — appropriate for a 4-digit number
+- 🖥️ Location info now shows formatted address on initial load (reverse geocode) instead of raw coordinates
+- 🖥️ PVGIS solar data box recolored from amber (warning-like) to blue (informational)
+- 🖥️ Rotation handle enlarged (8px → 12px) for easier mouse targeting
+- 🖥️ Stats card hover shadow removed for the Electricity Rate card (has interactive input)
 
 **v1.7.0 — March 12, 2026**
 - 📱 Sticky topbar — `position: sticky; top: 0` so stats remain visible while scrolling the page

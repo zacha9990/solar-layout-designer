@@ -44,14 +44,19 @@ class SLD_Shortcode_Handler {
                     <div class="sld-btn-group">
                         <button id="sld-add-panel" class="sld-btn sld-btn-primary" title="Add a new solar panel" aria-label="Add Panel">
                             <span class="sld-btn-icon" aria-hidden="true">+</span>
-                        </button>
-                        <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
-                            <span class="sld-btn-icon" aria-hidden="true">↻</span>
-                            <span class="sld-btn-label">Reset All</span>
+                            <span class="sld-btn-label">Add Panel</span>
                         </button>
                         <button id="sld-duplicate" class="sld-btn sld-btn-secondary" disabled title="Select a panel first" aria-label="Duplicate">
                             <span class="sld-btn-icon" aria-hidden="true">⬚</span>
                             <span class="sld-btn-label">Duplicate</span>
+                        </button>
+                        <button id="sld-delete" class="sld-btn sld-btn-secondary" disabled title="Delete selected panel" aria-label="Delete panel">
+                            <span class="sld-btn-icon" aria-hidden="true">&#x2715;</span>
+                            <span class="sld-btn-label">Delete</span>
+                        </button>
+                        <button id="sld-reset" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
+                            <span class="sld-btn-icon" aria-hidden="true">↻</span>
+                            <span class="sld-btn-label">Reset All</span>
                         </button>
                     </div>
                 </div>
@@ -143,7 +148,7 @@ class SLD_Shortcode_Handler {
                     <p class="sld-helper-text">Click &ldquo;Add Panel&rdquo; to start designing</p>
                 </div>
                 <div class="sld-panel-hint">
-                    <span class="sld-hint-desktop">Drag to move · Double-click to delete · Select to rotate or duplicate</span>
+                    <span class="sld-hint-desktop">Drag to move · Double-click to delete · Select → Delete/Backspace key to remove · Drag handle to rotate</span>
                     <span class="sld-hint-mobile">Tap to select · Drag to move · Double-tap to delete</span>
                 </div>
             </div>

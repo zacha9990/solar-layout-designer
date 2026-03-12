@@ -34,6 +34,7 @@ class SolarDesigner {
 
                 this.mapManager.initMap(lat, lng, zoom);
                 this.mapManager.onLocationChange = (newLat, newLng) => this._onLocationReady(newLat, newLng);
+                this.mapManager.reverseGeocodeLocation(lat, lng);
 
                 const searchInput = document.getElementById('sld-address-search');
                 const searchBtn   = document.getElementById('sld-search-btn');
@@ -195,6 +196,11 @@ class SolarDesigner {
 
         const dupBtn = document.getElementById('sld-duplicate');
         if (dupBtn) dupBtn.addEventListener('click', () => this.duplicatePanel());
+
+        const deleteBtn = document.getElementById('sld-delete');
+        if (deleteBtn) deleteBtn.addEventListener('click', () => {
+            if (this.selectedPanelId !== null) this.deletePanel(this.selectedPanelId);
+        });
 
         const mapToggle = document.getElementById('sld-toggle-map');
         if (mapToggle && this.mapManager) {
@@ -517,9 +523,9 @@ class SolarDesigner {
         document.querySelectorAll('.sld-panel-item').forEach(el => {
             el.classList.toggle('sld-panel-selected', parseInt(el.dataset.panelId) === panelId);
         });
-        // Enable/disable duplicate buttons (desktop + mobile)
+        // Enable/disable action buttons (desktop + mobile)
         const noneSelected = (panelId === null);
-        [document.getElementById('sld-duplicate'), document.getElementById('sld-duplicate-mob')]
+        [document.getElementById('sld-duplicate'), document.getElementById('sld-duplicate-mob'), document.getElementById('sld-delete')]
             .forEach(btn => { if (btn) btn.disabled = noneSelected; });
         // Activate/deactivate d-pad
         const dpad = document.getElementById('sld-dpad');

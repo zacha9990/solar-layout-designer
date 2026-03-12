@@ -3,7 +3,7 @@
  * Plugin Name: Solar Layout Designer
  * Plugin URI: https://example.com
  * Description: Interactive solar panel layout designer with energy calculations and Google Maps integration
- * Version: 1.7.0
+ * Version: 1.8.0
  * Author: Your Name
  * Author URI: https://example.com
  * License: GPL2
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('SLD_VERSION', '1.7.0');
+define('SLD_VERSION', '1.8.0');
 define('SLD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLD_PLUGIN_URL', plugin_dir_url(__FILE__));
 
