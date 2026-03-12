@@ -73,6 +73,9 @@ class SolarDesigner {
         // Selection state (for keyboard delete / rotate / duplicate)
         this.selectedPanelId = null;
 
+        // Toast timer
+        this._toastTimer = null;
+
         // Touch state — tap/drag/double-tap disambiguation
         this._touchStartX     = 0;
         this._touchStartY     = 0;
@@ -240,12 +243,13 @@ class SolarDesigner {
             this._setSelected(div ? parseInt(div.dataset.panelId) : null);
         });
 
-        // Click outside panels → deselect (exclude mobile float to preserve selection while using controls)
+        // Click outside panels → deselect (exclude mobile controls to preserve selection while using them)
         document.addEventListener('click', e => {
             if (!e.target.closest('.sld-panel-item') &&
                 !e.target.closest('.sld-btn') &&
                 !e.target.closest('.sld-input') &&
                 !e.target.closest('.sld-mobile-float') &&
+                !e.target.closest('.sld-mobile-topbar') &&
                 !e.target.closest('.sld-dpad')) {
                 this._setSelected(null);
             }
@@ -383,6 +387,38 @@ class SolarDesigner {
             });
         }
 
+        // Delete selected panel
+        const deleteMob = document.getElementById('sld-delete-mob');
+        if (deleteMob) deleteMob.addEventListener('click', () => {
+            if (this.selectedPanelId !== null) this.deletePanel(this.selectedPanelId);
+        });
+
+        // Rotate buttons (±15° per tap)
+        const rotateCW  = document.getElementById('sld-rotate-cw-mob');
+        const rotateCCW = document.getElementById('sld-rotate-ccw-mob');
+        if (rotateCW)  rotateCW.addEventListener('click',  () => this.rotateSelectedPanel(15));
+        if (rotateCCW) rotateCCW.addEventListener('click', () => this.rotateSelectedPanel(-15));
+
+        // Topbar collapse toggle
+        const topbarToggle = document.getElementById('sld-topbar-toggle');
+        const topbarBody   = document.getElementById('sld-mt-body');
+        if (topbarToggle && topbarBody) {
+            topbarToggle.addEventListener('click', () => {
+                const isExpanded = topbarToggle.classList.contains('sld-mt-expanded');
+                if (isExpanded) {
+                    topbarToggle.classList.remove('sld-mt-expanded');
+                    topbarToggle.textContent = '\u25B6';
+                    topbarToggle.setAttribute('aria-label', 'Expand details');
+                    topbarBody.classList.add('sld-mt-collapsed');
+                } else {
+                    topbarToggle.classList.add('sld-mt-expanded');
+                    topbarToggle.textContent = '\u25BC';
+                    topbarToggle.setAttribute('aria-label', 'Collapse details');
+                    topbarBody.classList.remove('sld-mt-collapsed');
+                }
+            });
+        }
+
         // D-pad — tap to move 8px, hold for continuous movement
         const dpadBtns = document.querySelectorAll('.sld-dpad-btn');
         dpadBtns.forEach(btn => {
@@ -488,6 +524,9 @@ class SolarDesigner {
         // Activate/deactivate d-pad
         const dpad = document.getElementById('sld-dpad');
         if (dpad) dpad.classList.toggle('sld-dpad-active', !noneSelected);
+        // Show/hide contextual row (delete + rotate)
+        const ctxRow = document.getElementById('sld-ctx-row');
+        if (ctxRow) ctxRow.classList.toggle('sld-ctx-visible', !noneSelected);
     }
 
     _endDrag() {
@@ -538,6 +577,7 @@ class SolarDesigner {
         this.panelManager.addPanel();
         this.uiManager.render();
         this.updateCalculations();
+        this._showToast('Panel added');
     }
 
     deletePanel(id) {
@@ -546,6 +586,7 @@ class SolarDesigner {
         this.panelManager.deletePanel(id);
         this.uiManager.render();
         this.updateCalculations();
+        this._showToast('Panel deleted');
     }
 
     duplicatePanel() {
@@ -596,6 +637,28 @@ class SolarDesigner {
     updateCalculations() {
         const stats = this.energyCalculator.calculate(this.panelManager.getPanelCount());
         this.uiManager.updateStats(stats);
+    }
+
+    // ─── Toast notification ──────────────────────────────────────────────────
+
+    _showToast(msg, duration = 2000) {
+        const toast = document.getElementById('sld-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('sld-toast-visible');
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => toast.classList.remove('sld-toast-visible'), duration);
+    }
+
+    // ─── Rotate selected panel by step degrees ───────────────────────────────
+
+    rotateSelectedPanel(deg) {
+        if (this.selectedPanelId === null) return;
+        const panel = this.panelManager.panels.find(p => p.id === this.selectedPanelId);
+        if (!panel) return;
+        panel.rotation = ((panel.rotation || 0) + deg + 360) % 360;
+        const div = document.querySelector(`.sld-panel-item[data-panel-id="${panel.id}"]`);
+        if (div) div.style.transform = `rotate(${panel.rotation}deg)`;
     }
 }
 

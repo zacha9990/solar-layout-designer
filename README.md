@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer for WordPress. Place panels over a Google Maps satellite view of any rooftop and instantly calculate energy production and savings.
 
-**Version:** 1.6.7 | **Phase:** 4 complete + mobile floating UI | **License:** GPL2
+**Version:** 1.7.0 | **Phase:** 4 complete + mobile UX polish | **License:** GPL2
 
 ---
 
@@ -110,12 +110,17 @@ Go to **Settings → Solar Designer** to configure:
 | Action | How |
 |--------|-----|
 | Search for a rooftop | Type address in search box → Enter or click Search |
-| Add a panel | Click **Add Panel** |
+| Add a panel | Click **+** (Add Panel) |
 | Move a panel | Click and drag |
 | Delete a panel | Double-click, or click to select (red border) → Delete/Backspace key |
-| Clear all panels | Click **Reset All** → confirm |
+| Clear all panels | Click **↻ Reset All** → confirm |
 | Change electricity rate | Edit the rate field in the stats bar; savings update immediately |
 | Hide the map | Uncheck **Show Satellite View** |
+| **Mobile — select a panel** | Tap once (red border) |
+| **Mobile — delete selected** | Tap ✕ in contextual row, or double-tap the panel |
+| **Mobile — rotate selected** | Tap ⟲ (−15°) or ⟳ (+15°) in contextual row |
+| **Mobile — move selected** | Use D-pad (hold for continuous movement) |
+| **Mobile — collapse stats** | Tap ▼ in topbar to hide search row and gain map space |
 
 ## Requirements
 
@@ -164,6 +169,14 @@ See [PHASE1_DOCUMENTATION.md](PHASE1_DOCUMENTATION.md) for complete technical ar
 ---
 
 ## Changelog
+
+**v1.7.0 — March 12, 2026**
+- 📱 Sticky topbar — `position: sticky; top: 0` so stats remain visible while scrolling the page
+- 📱 Collapsible topbar — `▼/▶` toggle hides search row + hint to maximise map viewport
+- 📱 Usage hint text — "Tap to select · Drag to move · Double-tap to delete" shown in topbar
+- 📱 Contextual action row — when a panel is selected, a second button row appears: `✕` Delete, `⟲` Rotate CCW, `⟳` Rotate CW (±15° per tap)
+- 📱 Toast notifications — brief pill message ("Panel added" / "Panel deleted") at bottom centre
+- 🐛 Click-outside deselect now excludes `.sld-mobile-topbar` (rate input no longer deselects a panel)
 
 **v1.6.7 — March 10, 2026**
 - 📱 Mobile UI restructure: stats (Panels, kWh/yr, €/yr, Rate) + address search moved to a new top bar above the map (`sld-mobile-topbar`)

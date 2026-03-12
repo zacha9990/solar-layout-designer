@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.6.7 | **Phase:** 1–4 complete + mobile floating UI | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
+**Current Version:** 1.7.0 | **Phase:** 1–4 complete + mobile UX polish | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
 
 ---
 
@@ -98,8 +98,17 @@ This works correctly regardless of rotation because `panel.x/y` are the logical 
 
 Two dedicated mobile-only containers replace the desktop toolbar/stats:
 
-- **`div.sld-mobile-topbar`** — static element rendered **above** `.sld-canvas-wrapper`; contains the stats row (Panels, kWh/yr, €/yr, Rate) + address search row. Hidden on desktop (`display: none`), shown as `flex` column on `≤768px`.
-- **`div.sld-mobile-float`** — `position: fixed; bottom: 0`; contains only action buttons (`+`, `⬚`, `↻`) + D-pad.
+- **`div.sld-mobile-topbar`** (`position: sticky; top: 0; z-index: 100`) — pinned at top of viewport; contains:
+  - **`.sld-mt-header`** — always-visible stats row (Panels, kWh/yr, €/yr, Rate) + collapse toggle button (`▼/▶`)
+  - **`.sld-mt-body`** (collapsible) — address search row + usage hint text; toggled via `.sld-mt-collapsed`
+- **`div.sld-mobile-float`** — `position: fixed; bottom: 0`; contains:
+  - Default row: `+` Add, `⬚` Duplicate, `↻` Reset
+  - **Contextual row** (`#sld-ctx-row`, `.sld-mf-ctx-row`) — `✕` Delete + `⟲` Rotate CCW + `⟳` Rotate CW; hidden by default, shown with `.sld-ctx-visible` when a panel is selected
+  - D-pad (4 directions), active only when panel is selected
+
+**Toast notifications** (`#sld-toast`, `.sld-toast`) — pill notification at bottom center, shown briefly after add/delete via `_showToast()`.
+
+**`rotateSelectedPanel(deg)`** — rotates selected panel by ±`deg` degrees; used by mobile rotate buttons (±15° per tap).
 
 The desktop `.sld-controls` and `.sld-stats` are hidden on mobile (`display: none !important`).
 Mobile-specific element IDs use a `-mob` suffix (e.g. `sld-panel-count-mob`, `sld-rate-input-mob`).

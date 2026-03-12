@@ -166,6 +166,13 @@ Setelah tahap ini selesai:
 - D-pad (directional pad) 4 arah dengan hold-to-repeat 80ms
 - Mirror stats ke floating panel
 - JS-controlled map height (window.innerHeight × 0.82) bypass CSS conflict
+- **v1.7.0 — Mobile UX Polish:**
+  - Topbar sticky (`position: sticky; top: 0`) agar stats tidak hilang saat scroll
+  - Collapsible topbar (▼/▶) untuk memaksimalkan area peta
+  - Hint penggunaan ditampilkan di topbar
+  - Contextual row: tombol Delete (✕), Rotate CCW (⟲), Rotate CW (⟳) muncul saat panel dipilih
+  - Toast notification saat panel ditambah/dihapus
+  - Tombol rotate mobile: `rotateSelectedPanel(±15°)` per tap
 
 ---
 

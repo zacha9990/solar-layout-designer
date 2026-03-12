@@ -735,18 +735,18 @@
         transform: translateX(14px);
     }
 
-    /* D-pad — cross layout via grid, 34px buttons to stay compact */
+    /* D-pad — cross layout via grid, large touch-friendly buttons */
     .sld-dpad {
         display: grid;
         grid-template-areas:
             ". up ."
             "left . right"
             ". down .";
-        grid-template-columns: 34px 34px 34px;
-        grid-template-rows: 34px 34px 34px;
-        gap: 3px;
+        grid-template-columns: 52px 52px 52px;
+        grid-template-rows: 52px 52px 52px;
+        gap: 4px;
         flex-shrink: 0;
-        opacity: 0.28;
+        opacity: 0.4;
         pointer-events: none;
         transition: opacity 0.2s ease;
     }
@@ -757,12 +757,12 @@
     }
 
     .sld-dpad-btn {
-        width: 34px;
-        height: 34px;
-        border: 1.5px solid var(--sld-border);
-        border-radius: var(--sld-radius-sm);
-        background: var(--sld-bg);
-        font-size: 18px;
+        width: 52px;
+        height: 52px;
+        border: 2px solid var(--sld-blue);
+        border-radius: 10px;
+        background: rgba(37, 99, 235, 0.12);
+        font-size: 24px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -770,19 +770,92 @@
         user-select: none;
         -webkit-user-select: none;
         touch-action: manipulation;
-        color: var(--sld-text);
+        color: var(--sld-blue);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        transition: background 0.1s, transform 0.1s;
     }
 
     .sld-dpad-btn:active {
-        background: var(--sld-blue-light);
+        background: var(--sld-blue);
         border-color: var(--sld-blue);
-        color: var(--sld-blue);
+        color: #fff;
+        transform: scale(0.93);
+        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
     }
 
     .sld-dpad-btn[data-dir="up"]    { grid-area: up; }
     .sld-dpad-btn[data-dir="left"]  { grid-area: left; }
     .sld-dpad-btn[data-dir="right"] { grid-area: right; }
     .sld-dpad-btn[data-dir="down"]  { grid-area: down; }
+
+    /* ── Sticky topbar ── */
+    .sld-mobile-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    /* ── Topbar header: stats row + collapse toggle ── */
+    .sld-mt-header {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .sld-mt-header .sld-mf-stats {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sld-mt-toggle-btn {
+        background: none;
+        border: none;
+        font-size: 11px;
+        color: var(--sld-text-3);
+        padding: 4px 8px;
+        cursor: pointer;
+        flex-shrink: 0;
+        line-height: 1;
+        border-radius: 4px;
+    }
+
+    .sld-mt-toggle-btn:hover {
+        background: var(--sld-bg);
+        color: var(--sld-text-2);
+    }
+
+    /* ── Collapsible topbar body ── */
+    .sld-mt-body {
+        overflow: hidden;
+        max-height: 200px;
+        opacity: 1;
+        transition: max-height 0.25s ease, opacity 0.2s ease;
+    }
+
+    .sld-mt-body.sld-mt-collapsed {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    /* ── Usage hint ── */
+    .sld-mt-hint {
+        font-size: 11px;
+        color: var(--sld-text-3);
+        margin: 6px 0 2px;
+        text-align: center;
+    }
+
+    /* ── Contextual row (delete + rotate) — hidden until panel is selected ── */
+    .sld-mf-ctx-row {
+        display: none;
+    }
+
+    .sld-mf-ctx-row.sld-ctx-visible {
+        display: flex;
+        padding-top: 8px;
+        border-top: 1px solid var(--sld-border);
+        margin-top: 2px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -801,6 +874,52 @@
     }
 }
 
+
+/* Danger button variant */
+.sld-btn-danger {
+    background: var(--sld-red);
+    color: white;
+    border: none;
+}
+
+.sld-btn-danger:hover {
+    background: #dc2626;
+    box-shadow: var(--sld-shadow-md);
+}
+
+.sld-btn-danger:active {
+    background: #b91c1c;
+}
+
+/* Toast notification */
+.sld-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(12px);
+    background: rgba(17, 24, 39, 0.88);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2000;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sld-toast.sld-toast-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+    .sld-toast {
+        bottom: 200px; /* above mobile float */
+    }
+}
 
 /* Loading State */
 .sld-loading {

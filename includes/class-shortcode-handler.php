@@ -88,39 +88,47 @@ class SLD_Shortcode_Handler {
             </div>
 
             <!-- Mobile Top Bar (stats + address search — mobile only) -->
-            <div class="sld-mobile-topbar">
-                <div class="sld-mf-stats">
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">Panels</span>
-                        <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
+            <div class="sld-mobile-topbar" id="sld-mobile-topbar">
+                <!-- Stats row — always visible, with collapse toggle -->
+                <div class="sld-mt-header">
+                    <div class="sld-mf-stats">
+                        <div class="sld-mf-stat">
+                            <span class="sld-mf-label">Panels</span>
+                            <span id="sld-panel-count-mob" class="sld-mf-val">0</span>
+                        </div>
+                        <div class="sld-mf-stat">
+                            <span class="sld-mf-label">kWh/yr</span>
+                            <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
+                        </div>
+                        <div class="sld-mf-stat sld-mf-highlight">
+                            <span class="sld-mf-label">€/yr</span>
+                            <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
+                        </div>
+                        <div class="sld-mf-stat">
+                            <span class="sld-mf-label">Rate</span>
+                            <input type="number" id="sld-rate-input-mob"
+                                   value="<?php echo esc_attr($atts['rate']); ?>"
+                                   min="0" step="0.01" class="sld-mf-rate">
+                        </div>
                     </div>
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">kWh/yr</span>
-                        <span id="sld-annual-kwh-mob" class="sld-mf-val">0</span>
-                    </div>
-                    <div class="sld-mf-stat sld-mf-highlight">
-                        <span class="sld-mf-label">€/yr</span>
-                        <span id="sld-annual-savings-mob" class="sld-mf-val">0</span>
-                    </div>
-                    <div class="sld-mf-stat">
-                        <span class="sld-mf-label">Rate</span>
-                        <input type="number" id="sld-rate-input-mob"
-                               value="<?php echo esc_attr($atts['rate']); ?>"
-                               min="0" step="0.01" class="sld-mf-rate">
-                    </div>
+                    <button id="sld-topbar-toggle" class="sld-mt-toggle-btn sld-mt-expanded" aria-label="Collapse details" title="Toggle details">&#9660;</button>
                 </div>
-                <?php if ($has_maps): ?>
-                <div class="sld-mf-btn-row">
-                    <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
-                    <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
-                        <span class="sld-btn-icon" aria-hidden="true">🔍</span>
-                    </button>
-                    <label class="sld-mf-toggle" title="Satellite view">
-                        <input type="checkbox" id="sld-toggle-map-mob" checked>
-                        🛰
-                    </label>
+                <!-- Collapsible body: search + usage hint -->
+                <div class="sld-mt-body" id="sld-mt-body">
+                    <?php if ($has_maps): ?>
+                    <div class="sld-mf-btn-row">
+                        <input type="text" id="sld-address-search-mob" class="sld-mf-search" placeholder="Search address…">
+                        <button id="sld-search-btn-mob" class="sld-btn sld-btn-primary" title="Search" aria-label="Search">
+                            <span class="sld-btn-icon" aria-hidden="true">🔍</span>
+                        </button>
+                        <label class="sld-mf-toggle" title="Satellite view">
+                            <input type="checkbox" id="sld-toggle-map-mob" checked>
+                            🛰
+                        </label>
+                    </div>
+                    <?php endif; ?>
+                    <p class="sld-mt-hint">Tap to select &middot; Drag to move &middot; Double-tap to delete</p>
                 </div>
-                <?php endif; ?>
             </div>
 
             <!-- Map + Panel Container -->
@@ -187,6 +195,7 @@ class SLD_Shortcode_Handler {
                 <div class="sld-mf-body">
 
                     <div class="sld-mf-btns">
+                        <!-- Default actions -->
                         <div class="sld-mf-btn-row">
                             <button id="sld-add-panel-mob" class="sld-btn sld-btn-primary" title="Add Panel" aria-label="Add Panel">
                                 <span class="sld-btn-icon" aria-hidden="true">+</span>
@@ -196,6 +205,18 @@ class SLD_Shortcode_Handler {
                             </button>
                             <button id="sld-reset-mob" class="sld-btn sld-btn-secondary" title="Remove all panels" aria-label="Reset All">
                                 <span class="sld-btn-icon" aria-hidden="true">↻</span>
+                            </button>
+                        </div>
+                        <!-- Contextual row — visible only when a panel is selected -->
+                        <div class="sld-mf-btn-row sld-mf-ctx-row" id="sld-ctx-row">
+                            <button id="sld-delete-mob" class="sld-btn sld-btn-danger" title="Delete selected panel" aria-label="Delete panel">
+                                <span class="sld-btn-icon" aria-hidden="true">&#x2715;</span>
+                            </button>
+                            <button id="sld-rotate-ccw-mob" class="sld-btn sld-btn-secondary" title="Rotate 15° counter-clockwise" aria-label="Rotate left">
+                                <span class="sld-btn-icon" aria-hidden="true">&#x27F2;</span>
+                            </button>
+                            <button id="sld-rotate-cw-mob" class="sld-btn sld-btn-secondary" title="Rotate 15° clockwise" aria-label="Rotate right">
+                                <span class="sld-btn-icon" aria-hidden="true">&#x27F3;</span>
                             </button>
                         </div>
                     </div>
@@ -210,6 +231,8 @@ class SLD_Shortcode_Handler {
 
                 </div>
             </div>
+            <!-- Toast notification -->
+            <div id="sld-toast" class="sld-toast" role="status" aria-live="polite"></div>
 
         </div>
 
