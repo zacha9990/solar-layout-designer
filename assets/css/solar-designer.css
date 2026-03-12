@@ -504,8 +504,9 @@
     display: none;
 }
 
-/* Mobile Top Bar — stats + address search, hidden on desktop */
-.sld-mobile-topbar {
+/* Mobile Top Bar (sticky stats) + Mobile Address Bar — hidden on desktop */
+.sld-mobile-topbar,
+.sld-mobile-address-bar {
     display: none;
 }
 
@@ -565,14 +566,26 @@
         border: none;
     }
 
-    /* ── Mobile Top Bar — pinned above the map ── */
-    .sld-mobile-topbar {
+    /* ── Mobile Address Bar — scrolls with page, above sticky topbar ── */
+    .sld-mobile-address-bar {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
         padding: 10px 14px;
         background: var(--sld-surface);
         border-bottom: 1px solid var(--sld-border);
+    }
+
+    /* ── Mobile Top Bar — sticky stats row ── */
+    .sld-mobile-topbar {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: var(--sld-surface);
+        border-bottom: 1px solid var(--sld-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
     }
 
     /* ── Mobile Floating Panel — pinned to bottom of viewport ── */
@@ -615,7 +628,7 @@
     }
 
     .sld-mf-val {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 700;
         color: var(--sld-text);
         line-height: 1.2;
@@ -792,60 +805,17 @@
     .sld-dpad-btn[data-dir="right"] { grid-area: right; }
     .sld-dpad-btn[data-dir="down"]  { grid-area: down; }
 
-    /* ── Sticky topbar ── */
-    .sld-mobile-topbar {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-
-    /* ── Topbar header: stats row + collapse toggle ── */
-    .sld-mt-header {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .sld-mt-header .sld-mf-stats {
+    /* ── Topbar stats row fills full width ── */
+    .sld-mobile-topbar .sld-mf-stats {
         flex: 1;
         min-width: 0;
     }
 
-    .sld-mt-toggle-btn {
-        background: none;
-        border: none;
-        font-size: 11px;
-        color: var(--sld-text-3);
-        padding: 4px 8px;
-        cursor: pointer;
-        flex-shrink: 0;
-        line-height: 1;
-        border-radius: 4px;
-    }
-
-    .sld-mt-toggle-btn:hover {
-        background: var(--sld-bg);
-        color: var(--sld-text-2);
-    }
-
-    /* ── Collapsible topbar body ── */
-    .sld-mt-body {
-        overflow: hidden;
-        max-height: 200px;
-        opacity: 1;
-        transition: max-height 0.25s ease, opacity 0.2s ease;
-    }
-
-    .sld-mt-body.sld-mt-collapsed {
-        max-height: 0;
-        opacity: 0;
-    }
-
-    /* ── Usage hint ── */
+    /* ── Usage hint in address bar ── */
     .sld-mt-hint {
         font-size: 11px;
         color: var(--sld-text-3);
-        margin: 6px 0 2px;
+        margin: 2px 0 0;
         text-align: center;
     }
 
