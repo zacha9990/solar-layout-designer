@@ -656,4 +656,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!container || typeof solarDesignerData === 'undefined') return;
 
     new SolarDesigner('.solar-designer-container', solarDesignerData);
+
+    // On mobile, auto-scroll so the designer fills the viewport without manual scrolling
+    if (window.innerWidth <= 768) {
+        setTimeout(function () {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+    }
 });

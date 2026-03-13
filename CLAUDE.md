@@ -2,7 +2,7 @@
 
 Interactive solar panel layout designer with Google Maps satellite view. Rendered via the `[solar_designer]` shortcode.
 
-**Current Version:** 1.8.6 | **Phase:** 1–4 complete + desktop & mobile UX polish | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
+**Current Version:** 1.8.7 | **Phase:** 1–4 complete + desktop & mobile UX polish | **Next:** Phase 5 (Google Solar API — see PHASE5_PLAN.md)
 
 ---
 
@@ -72,7 +72,7 @@ Panels are too small for a dedicated delete button. Instead:
 Panel divs use CSS `repeating-linear-gradient` to render a **3-column × 5-row** cell grid over a dark navy background. No canvas or SVG needed — purely CSS via `background-image`.
 
 ### 6. Panel Rotation (Phase 2)
-- When a panel is selected, a small **8px circular rotation handle** appears at the top-center of the panel
+- When a panel is selected, a **20px circular rotation handle** appears above the top-center of the panel (`top: -30px`)
 - Drag the handle to rotate the panel around its center
 - Rotation angle is stored as `panel.rotation` in degrees (0–360°)
 - **Math:** `angle = atan2(mouseY - centerY, mouseX - centerX) × 180/π + 90°` (so 0° = handle pointing "up")
