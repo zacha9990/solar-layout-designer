@@ -16,7 +16,7 @@ class SolarDesigner {
         const wrapper = this.container.querySelector('.sld-canvas-wrapper');
         if (wrapper) {
             if (window.innerWidth <= 768) {
-                wrapper.style.height = Math.round(window.innerHeight * 0.82) + 'px';
+                wrapper.style.height = Math.round(window.innerHeight * 0.75) + 'px';
             } else {
                 wrapper.style.height = this.designHeight + 'px';
             }
@@ -88,11 +88,16 @@ class SolarDesigner {
         // Calculate correct panel pixel size based on map zoom + latitude
         this._updatePanelSize();
 
-        // Recalculate panel size whenever user zooms or pans the map
+        // Recalculate panel size + reposition from geo on zoom
+        // Reposition from geo on pan (center_changed fires on every frame during drag)
         if (this.mapManager && this.mapManager.map) {
             google.maps.event.addListener(this.mapManager.map, 'zoom_changed', () => {
                 this._updatePanelSize();
-                this.uiManager.render();
+                this.uiManager.repositionPanels();
+            });
+            google.maps.event.addListener(this.mapManager.map, 'center_changed', () => {
+                this.panelManager.panels.forEach(p => this._repositionFromGeo(p));
+                this.uiManager.repositionPanels();
             });
         }
 
@@ -131,26 +136,45 @@ class SolarDesigner {
             heightPx = this.config.panelSpecs.height;
         }
 
-        // Reposition existing panels proportionally so they stay on the same
-        // roof spot when zoom changes (map zooms toward its center = canvas center).
-        const oldW = this.panelManager.panelWidth;
-        const oldH = this.panelManager.panelHeight;
-        if (this.panelManager.panels.length > 0 && oldW > 0 && oldW !== widthPx) {
-            const scale = widthPx / oldW;
-            const cw    = this.designWidth;
-            const ch    = this.designHeight;
-            this.panelManager.panels.forEach(p => {
-                // Compute old panel center, scale it from canvas center, derive new top-left
-                const cx = p.x + oldW / 2;
-                const cy = p.y + oldH / 2;
-                const newCx = (cx - cw / 2) * scale + cw / 2;
-                const newCy = (cy - ch / 2) * scale + ch / 2;
-                p.x = Math.max(0, Math.min(newCx - widthPx / 2, cw - widthPx));
-                p.y = Math.max(0, Math.min(newCy - heightPx / 2, ch - heightPx));
-            });
-        }
-
         this.panelManager.resizePanels(widthPx, heightPx);
+
+        // Reposition all panels from their stored geo coordinates.
+        // Panels without geo coords (lat === null) are left in place.
+        this.panelManager.panels.forEach(p => this._repositionFromGeo(p));
+    }
+
+    // ─── Geo-anchor helpers ──────────────────────────────────────────────────
+
+    /**
+     * Store the panel's current pixel center as a lat/lng geo coordinate.
+     * Called after placement, drag-end, or d-pad move so the panel stays
+     * bound to the same roof spot when the map is later panned or zoomed.
+     */
+    _assignGeoCoords(panel) {
+        if (!this.mapManager || !this.mapManager.map) return;
+        const geo = this.mapManager.pixelToLatLng(
+            panel.x + panel.width  / 2,
+            panel.y + panel.height / 2
+        );
+        if (!geo) return;
+        panel.lat = geo.lat;
+        panel.lng = geo.lng;
+    }
+
+    /**
+     * Reproject a panel's stored lat/lng back to pixel position and update
+     * panel.x / panel.y accordingly. No-op if geo coords are not yet assigned.
+     */
+    _repositionFromGeo(panel) {
+        if (!this.mapManager || !this.mapManager.map) return;
+        if (panel.lat === null || panel.lng === null) return;
+        const px = this.mapManager.latLngToPixel(panel.lat, panel.lng);
+        if (!px) return;
+        // No clamping — allow negative or out-of-bounds positions so panels
+        // naturally disappear when panned off-screen. The panel area has
+        // overflow:hidden which clips them correctly.
+        panel.x = Math.round(px.x - panel.width  / 2);
+        panel.y = Math.round(px.y - panel.height / 2);
     }
 
     // ─── PVGIS Location-aware irradiance ────────────────────────────────────
@@ -406,6 +430,10 @@ class SolarDesigner {
         if (rotateCW)  rotateCW.addEventListener('click',  () => this.rotateSelectedPanel(5));
         if (rotateCCW) rotateCCW.addEventListener('click', () => this.rotateSelectedPanel(-5));
 
+        // Fullscreen toggle
+        const fsBtn = document.getElementById('sld-fullscreen-toggle');
+        if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFullscreen());
+
         // D-pad — tap to move 8px, hold for continuous movement
         const dpadBtns = document.querySelectorAll('.sld-dpad-btn');
         dpadBtns.forEach(btn => {
@@ -429,6 +457,17 @@ class SolarDesigner {
             btn.addEventListener('mouseleave', stopMove);
             btn.addEventListener('touchend',   stopMove);
         });
+    }
+
+    _toggleFullscreen() {
+        const container = this.container;
+        const btn = document.getElementById('sld-fullscreen-toggle');
+        const isFullscreen = container.classList.toggle('sld-fullscreen');
+        if (btn) btn.textContent = isFullscreen ? '✕' : '⛶';
+        setTimeout(() => {
+            if (this.mapManager) this.mapManager.resize();
+            this._updatePanelSize();
+        }, 50);
     }
 
     /**
@@ -456,6 +495,9 @@ class SolarDesigner {
             div.style.left = panel.x + 'px';
             div.style.top  = panel.y + 'px';
         }
+
+        // Update geo anchor to new position
+        this._assignGeoCoords(panel);
     }
 
     // ─── Drag helpers ────────────────────────────────────────────────────────
@@ -521,6 +563,11 @@ class SolarDesigner {
         if (this.draggedDiv) {
             this.draggedDiv.style.zIndex = '';
         }
+        // Update geo coords to the panel's new pixel position so future
+        // pan/zoom events keep it anchored to the correct roof spot.
+        const panel = this.panelManager.panels.find(p => p.id === this.draggedPanelId);
+        if (panel) this._assignGeoCoords(panel);
+
         document.body.style.cursor = '';
         document.body.classList.remove('sld-is-dragging');
         this.isDragging     = false;
@@ -561,10 +608,32 @@ class SolarDesigner {
     // ─── Actions ─────────────────────────────────────────────────────────────
 
     addPanel() {
-        this.panelManager.addPanel();
+        const panel = this.panelManager.addPanel();
+
+        // If there are existing panels, place the new one adjacent to the last panel
+        // so it doesn't spawn far away from the current cluster.
+        const panels = this.panelManager.panels;
+        if (panels.length > 1) {
+            const last = panels[panels.length - 2];
+            panel.x = last.x + last.width + 10;
+            panel.y = last.y;
+            // If it would overflow the right edge, wrap below the last panel
+            if (panel.x + panel.width > this.panelManager.canvasWidth) {
+                panel.x = last.x;
+                panel.y = last.y + last.height + 10;
+            }
+        }
+
+        this._assignGeoCoords(panel);
+
+        // Pan the map to center on the new panel
+        if (this.mapManager && this.mapManager.map && panel.lat !== null) {
+            this.mapManager.map.panTo(new google.maps.LatLng(panel.lat, panel.lng));
+        }
+
         this.uiManager.render();
         this.updateCalculations();
-        this._showToast('Panel added');
+        this._showToast(window.matchMedia('(pointer: coarse)').matches ? 'Tap panel to move or rotate' : 'Click panel to move or rotate');
     }
 
     deletePanel(id) {
@@ -580,6 +649,7 @@ class SolarDesigner {
         if (this.selectedPanelId === null) return;
         const newPanel = this.panelManager.duplicatePanel(this.selectedPanelId);
         if (newPanel) {
+            this._assignGeoCoords(newPanel);
             this.uiManager.render();
             this._setSelected(newPanel.id);
             this.updateCalculations();

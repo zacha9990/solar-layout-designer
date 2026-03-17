@@ -43,9 +43,21 @@ Returns `annualFluxUrl` — a GeoTIFF raster of annual solar flux (kWh/kW/year) 
 
 ---
 
+## Delivery Tiers
+
+| Tier | Features | Hours | Price | Best for |
+|------|----------|-------|-------|----------|
+| **Tier 1 — MVP** | Segment color overlay + "Best placement" hint | ~6h | **$600** | Try the value with minimal commitment |
+| **Tier 2 — Core** | MVP + segment tooltip + orientation-aware energy calc + roof analysis table + testing | ~18h | **$1,800** | Full production-ready solar guidance |
+| **Tier 3 — Full** | Core + pixel-level flux heatmap | ~23h | **$2,300** | Maximum visual detail, spot shading within a segment |
+
+Each tier is a superset of the previous — client can start with MVP and upgrade later.
+
+---
+
 ## Features to Implement
 
-### Feature 1: Irradiance Overlay — Visual Guidance for Panel Placement ⭐ (primary UX goal)
+### Feature 1: Irradiance Overlay — Visual Guidance for Panel Placement ⭐ `[Tier 1+]`
 
 **What it does:**
 Before the user places a single panel, a **color-coded overlay** appears directly on the satellite map showing which areas of the rooftop receive the most annual sunlight. The user can immediately see: *"green zone = place panels here, orange zone = avoid."*
@@ -63,7 +75,7 @@ Each detected roof segment is filled with a semi-transparent polygon color based
 
 This renders immediately after address search with no extra API call.
 
-**B. Pixel-Level Flux Heatmap — from `dataLayers` (optional, higher detail)**
+**B. Pixel-Level Flux Heatmap — from `dataLayers` `[Tier 3 only]`**
 A finer overlay showing solar flux per pixel across the entire rooftop. Useful for spotting shaded areas (chimneys, dormers, adjacent buildings) within a single segment.
 
 - Rendered as a semi-transparent `google.maps.ImageMapType` over the satellite tiles
@@ -99,7 +111,7 @@ _renderSegmentOverlays(buildingData) {
 
 ---
 
-### Feature 2: Segment Tooltip — Direction, Pitch, and Production on Click
+### Feature 2: Segment Tooltip — Direction, Pitch, and Production on Click `[Tier 2+]`
 
 **What it does:**
 Clicking a colored segment shows a floating info card pinned near the clicked area:
@@ -116,7 +128,7 @@ Clicking elsewhere dismisses the tooltip. On mobile, the tooltip appears as a sl
 
 ---
 
-### Feature 3: Orientation-Aware Energy Calculation
+### Feature 3: Orientation-Aware Energy Calculation `[Tier 2+]`
 
 **What it does:**
 When a panel is placed on (or moved into) a roof segment, its annual energy estimate uses that specific segment's solar data rather than a global flat value.
@@ -138,7 +150,40 @@ Each panel object gets an optional `segmentId` field. When a panel is added or m
 
 ---
 
-### Feature 4: Roof Analysis Summary Panel
+### Feature 5: "Best Placement" First-Time Hint ⭐ `[Tier 1+]`
+
+**What it does:**
+The first time Solar API data loads for a location **and no panels have been placed yet**, the tool proactively guides the user to the optimal area instead of waiting for them to discover the overlay on their own.
+
+**Behaviour:**
+1. After `buildingInsights` loads, identify the segment with the highest `yearlyEnergyDcKwh`
+2. If `panelCount === 0`, show a pulsing "Start here" badge anchored to that segment's centroid (lat/lng → pixel projection via `fromLatLngToPoint`)
+3. Badge text: *"Best area — start placing panels here"*
+4. Badge auto-dismisses when the user places their first panel or clicks elsewhere
+5. A one-line status message also appears above the map: *"☀ Best roof area highlighted. Place panels in the green zone for maximum production."*
+
+**Desktop UI:** Badge is a small green pill (`position: absolute`, `z-index: 10`) with a CSS `pulse` animation. Status message appears in the controls bar.
+
+**Mobile UI:** Status message appears as a toast notification (`_showToast()`). No badge (too small to be useful).
+
+**Implementation sketch:**
+```javascript
+// solar-api-manager.js
+_showBestPlacementHint(buildingData) {
+    if (this._panelManager.panels.length > 0) return; // only on empty canvas
+    const best = buildingData.solarPotential.roofSegmentStats
+        .reduce((a, b) => a.yearlyEnergyDcKwh > b.yearlyEnergyDcKwh ? a : b);
+    const center = best.center; // { latitude, longitude }
+    this._renderHintBadge(center, 'Best area — start placing panels here');
+    this._once('panel-added', () => this._removeHintBadge());
+}
+```
+
+**Effort:** 2h (included in core)
+
+---
+
+### Feature 4: Roof Analysis Summary Panel `[Tier 2+]`
 
 **What it does:**
 After fetching building insights, show a collapsible table listing all detected segments with key metrics. This helps users plan before placing panels.
@@ -190,27 +235,36 @@ Add `sld_google_solar_api_key` to the settings page. In most cases this will be 
 
 ## Implementation Roadmap
 
-**Core (included in base price):**
+**Tier 1 — MVP (~6h, $600):**
 
 | Sprint | Task | Effort |
 |--------|------|--------|
-| 1 | `SolarApiManager` class; Settings field; `wp_localize_script` passthrough | 2h |
-| 1 | Fetch `buildingInsights` on map idle after address search; log to console | 1h |
+| 1 | `SolarApiManager` skeleton; Settings field; `wp_localize_script` passthrough | 1h |
+| 1 | Fetch `buildingInsights` on address search; cache per lat/lng | 1h |
 | 2 | Render segment color polygons on map; toggle on/off | 3h |
-| 2 | Segment click tooltip (direction, pitch, area, kWh/year) | 2h |
-| 3 | Per-segment energy calculation; `segmentId` on panels; fallback chain | 3h |
-| 3 | Roof analysis summary panel (desktop table + mobile cards) | 2h |
-| 4 | Testing, edge cases (no Solar data, bad coords, API quota), polish | 2h |
-| 4 | Documentation update | 1h |
-| | **Core Total** | **16h** |
+| 2 | "Best Placement" hint badge (desktop) + toast (mobile); auto-dismiss on first panel | 1h |
+| | **Tier 1 Total** | **6h** |
 
-**Add-on (optional, quoted separately):**
+**Tier 2 — Core (additional ~12h on top of Tier 1, $1,200 delta → $1,800 total):**
+
+| Sprint | Task | Effort |
+|--------|------|--------|
+| 3 | Segment click tooltip (direction, pitch, area, kWh/year) — desktop + mobile slide-up | 2h |
+| 3 | Per-segment energy calculation; `segmentId` on panels; fallback chain | 3h |
+| 4 | Roof analysis summary panel (desktop table + mobile scrollable cards) | 2h |
+| 4 | Testing, edge cases (no Solar data, bad coords, API quota), polish | 4h |
+| 4 | Documentation update | 1h |
+| | **Tier 2 Delta** | **12h** |
+| | **Tier 2 Total** | **18h** |
+
+**Tier 3 — Full (additional ~5h on top of Tier 2, $500 delta → $2,300 total):**
 
 | Task | Effort |
 |------|--------|
 | Pixel-level flux heatmap (GeoTIFF → PNG via PHP; `ImageMapType` overlay) | 4h |
-| Heatmap legend; mobile heatmap toggle | 1h |
-| **Add-on Total** | **5h** |
+| Heatmap legend + mobile heatmap toggle | 1h |
+| **Tier 3 Delta** | **5h** |
+| **Tier 3 Total** | **23h** |
 
 ---
 
@@ -240,41 +294,55 @@ https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=L
 
 ## Success Criteria
 
-- [ ] User can visually see which roof areas get more sun before placing panels
-- [ ] North-facing segment shows measurably lower kWh/year than south-facing on same building
-- [ ] Segment polygons render correctly over satellite view without blocking panel drag
-- [ ] Clicking a segment shows correct direction, pitch, area, and production estimate
-- [ ] Pixel-level heatmap renders and toggles correctly
-- [ ] Roof analysis table shows correct breakdown by direction
-- [ ] When Solar API unavailable, PVGIS fallback activates automatically — no JS error
+**Tier 1 — MVP:**
+- [ ] Segment color polygons render correctly over satellite view without blocking panel drag
+- [ ] First-time user with no panels placed sees "Best area" hint badge on the optimal roof segment
+- [ ] Hint badge auto-dismisses after first panel is placed
+- [ ] When Solar API unavailable, PVGIS fallback activates — no JS error, no broken UI
 - [ ] API calls are cached — revisiting a previous address does not re-fetch
+
+**Tier 2 — Core (includes Tier 1):**
+- [ ] Clicking a segment shows correct direction, pitch, area, and production estimate
+- [ ] North-facing segment shows measurably lower kWh/year than south-facing on same building
+- [ ] Roof analysis table shows correct breakdown by direction
 - [ ] Works on mobile (touch-friendly segment tap, compact summary cards in floating panel)
+
+**Tier 3 — Full (includes Tier 2):**
+- [ ] Pixel-level heatmap renders and toggles correctly
+- [ ] Heatmap legend correctly maps color scale to kWh/kW/year values
 
 ---
 
 ## Estimated Budget
 
-**Phase 5 Core:**
+**Tier 1 — MVP** *(recommended starting point)*
 
 | Component | Hours | Rate | Cost |
 |-----------|-------|------|------|
-| SolarApiManager + settings | 3h | $100/h | $300 |
+| SolarApiManager skeleton + Settings field + buildingInsights fetch | 2h | $100/h | $200 |
 | Segment color overlay + toggle | 3h | $100/h | $300 |
-| Segment tooltip | 2h | $100/h | $200 |
-| Per-segment energy calculation | 3h | $100/h | $300 |
-| Roof analysis summary panel | 2h | $100/h | $200 |
-| Testing, polish, docs | 3h | $100/h | $300 |
-| **Core Total** | **16h** | — | **$1,600** |
+| "Best Placement" hint badge + toast | 1h | $100/h | $100 |
+| **Tier 1 Total** | **6h** | — | **$600** |
 
-**Phase 5 Add-on — Pixel Heatmap (optional):**
+**Tier 2 — Core** *(full production-ready solar guidance)*
 
 | Component | Hours | Rate | Cost |
 |-----------|-------|------|------|
+| Tier 1 (above) | 6h | $100/h | $600 |
+| Segment click tooltip | 2h | $100/h | $200 |
+| Per-segment energy calculation + fallback chain | 3h | $100/h | $300 |
+| Roof analysis summary panel (desktop + mobile) | 2h | $100/h | $200 |
+| Testing, polish, docs | 5h | $100/h | $500 |
+| **Tier 2 Total** | **18h** | — | **$1,800** |
+
+**Tier 3 — Full** *(adds pixel-level shade detection)*
+
+| Component | Hours | Rate | Cost |
+|-----------|-------|------|------|
+| Tier 2 (above) | 18h | $100/h | $1,800 |
 | GeoTIFF → PNG conversion (PHP) + ImageMapType overlay | 4h | $100/h | $400 |
 | Heatmap legend + mobile toggle | 1h | $100/h | $100 |
-| **Add-on Total** | **5h** | — | **$500** |
-
-**Full Phase 5 (Core + Add-on): $2,100**
+| **Tier 3 Total** | **23h** | — | **$2,300** |
 
 ---
 

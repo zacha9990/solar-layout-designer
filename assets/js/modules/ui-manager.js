@@ -73,6 +73,28 @@ class UIManager {
     }
 
     /**
+     * Fast reposition — update only left/top/width/height of existing panel divs.
+     * Used during map pan/zoom so we avoid recreating the full DOM.
+     */
+    repositionPanels() {
+        const areaW = this.panelArea.offsetWidth;
+        const areaH = this.panelArea.offsetHeight;
+        this.panelManager.panels.forEach(panel => {
+            const div = this.panelArea.querySelector(`.sld-panel-item[data-panel-id="${panel.id}"]`);
+            if (!div) return;
+            div.style.left   = panel.x + 'px';
+            div.style.top    = panel.y + 'px';
+            div.style.width  = panel.width + 'px';
+            div.style.height = panel.height + 'px';
+            // Hide panel when fully outside the visible area.
+            // overflow:hidden alone is unreliable on mobile WebKit with transformed children.
+            const offScreen = panel.x + panel.width < 0 || panel.y + panel.height < 0 ||
+                              panel.x > areaW || panel.y > areaH;
+            div.style.visibility = offScreen ? 'hidden' : '';
+        });
+    }
+
+    /**
      * Update statistics display
      */
     updateStats(stats) {
