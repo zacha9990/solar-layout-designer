@@ -32,12 +32,7 @@ class MapManager {
             center: center,
             zoom: zoom,
             mapTypeId: 'satellite',
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: google.maps.ControlPosition.TOP_RIGHT,
-                mapTypeIds: ['satellite', 'hybrid']
-            },
+            mapTypeControl: false,
             streetViewControl: false,
             fullscreenControl: true,
             zoomControl: true,
@@ -77,20 +72,24 @@ class MapManager {
         // Handle place selection
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
-            
+
             if (!place.geometry || !place.geometry.location) {
                 console.error('No geometry found for this place');
                 return;
             }
-            
+
             this.moveToLocation(
                 place.geometry.location.lat(),
                 place.geometry.location.lng(),
                 21
             );
-            
+
             // Update location display
             this.updateLocationDisplay(place.formatted_address);
+
+            // Blur input so the keyboard dismisses and the pac-container
+            // overlay is fully removed — otherwise it blocks map touch controls
+            inputElement.blur();
         });
         
         // Handle search button click
@@ -99,9 +98,10 @@ class MapManager {
                 const address = inputElement.value;
                 if (address) {
                     this.geocodeAddress(address);
+                    inputElement.blur();
                 }
             });
-            
+
             // Also handle Enter key
             inputElement.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -109,6 +109,7 @@ class MapManager {
                     const address = inputElement.value;
                     if (address) {
                         this.geocodeAddress(address);
+                        inputElement.blur();
                     }
                 }
             });
@@ -236,6 +237,55 @@ class MapManager {
         }
     }
     
+    /**
+     * Convert a lat/lng geographic coordinate to a pixel position (x, y)
+     * relative to the top-left of the map container element.
+     * Returns null if the projection is not yet ready.
+     */
+    latLngToPixel(lat, lng) {
+        if (!this.map) return null;
+        const projection = this.map.getProjection();
+        if (!projection) return null;
+        const bounds = this.map.getBounds();
+        if (!bounds) return null;
+
+        const zoom  = this.map.getZoom();
+        const scale = Math.pow(2, zoom);
+
+        // NW corner of the current viewport in world coordinates
+        const nwLatLng = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
+        const nwPoint  = projection.fromLatLngToPoint(nwLatLng);
+        const point    = projection.fromLatLngToPoint(new google.maps.LatLng(lat, lng));
+
+        return {
+            x: Math.round((point.x - nwPoint.x) * scale),
+            y: Math.round((point.y - nwPoint.y) * scale)
+        };
+    }
+
+    /**
+     * Convert a pixel position (x, y) relative to the map container
+     * back to a geographic lat/lng coordinate.
+     * Returns null if the projection is not yet ready.
+     */
+    pixelToLatLng(x, y) {
+        if (!this.map) return null;
+        const projection = this.map.getProjection();
+        if (!projection) return null;
+        const bounds = this.map.getBounds();
+        if (!bounds) return null;
+
+        const zoom  = this.map.getZoom();
+        const scale = Math.pow(2, zoom);
+
+        const nwLatLng   = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
+        const nwPoint    = projection.fromLatLngToPoint(nwLatLng);
+        const worldPoint = new google.maps.Point(x / scale + nwPoint.x, y / scale + nwPoint.y);
+        const latLng     = projection.fromPointToLatLng(worldPoint);
+
+        return { lat: latLng.lat(), lng: latLng.lng() };
+    }
+
     /**
      * Calculate meters per CSS pixel using the actual rendered map bounds.
      * This is accurate on all devices including mobile HiDPI (where the classic

@@ -74,12 +74,6 @@ class SLD_Shortcode_Handler {
                             <span class="sld-btn-label">Go</span>
                         </button>
                     </div>
-                    <div class="sld-toggle-controls">
-                        <label for="sld-toggle-map">
-                            <input type="checkbox" id="sld-toggle-map" checked>
-                            Satellite View
-                        </label>
-                    </div>
                 </div>
                 <?php else: ?>
                 <div class="sld-controls-right">
@@ -231,6 +225,9 @@ class SLD_Shortcode_Handler {
             </div>
             <!-- Toast notification -->
             <div id="sld-toast" class="sld-toast" role="status" aria-live="polite"></div>
+
+            <!-- Mobile Fullscreen Toggle -->
+            <button id="sld-fullscreen-toggle" class="sld-fullscreen-btn" aria-label="Toggle fullscreen map">⛶</button>
 
         </div>
 

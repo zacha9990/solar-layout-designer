@@ -10,6 +10,8 @@ class SolarPanel {
         this.height = height;
         this.rotation = 0; // Phase 2 implemented
         this.selected = false; // Phase 2 implemented
+        this.lat = null; // geo-anchor: assigned after placement on map
+        this.lng = null; // geo-anchor: assigned after placement on map
     }
 }
 
